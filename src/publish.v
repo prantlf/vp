@@ -1,0 +1,157 @@
+import net.http { Request }
+import os { getenv_opt }
+import prantlf.jany { Any }
+import prantlf.json { StringifyOpts, stringify }
+import prantlf.osutil { ExecuteOpts, execute, execute_opt }
+import prantlf.pcre { NoMatch, pcre_compile }
+import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
+
+fn publish(assets []string, commit bool, tag bool, push bool, release bool, failure bool, yes bool, verbose bool) ! {
+	ver, log := if release {
+		get_last_version(failure, verbose)!
+	} else {
+		_, _, manifest := get_manifest()!
+		manifest.version, ''
+	}
+	if ver.len > 0 {
+		do_publish(ver, assets, log, commit, tag, push, release, failure, yes, verbose)!
+	}
+}
+
+fn get_last_version(failure bool, verbose bool) !(string, string) {
+	out := execute_opt('newchanges -iv', ExecuteOpts{
+		trim_trailing_whitespace: true
+	})!
+	log := until_last_nth_line_not_empty(out, 2)
+	line := last_line_not_empty(out)
+	if verbose {
+		println(out)
+	} else {
+		println(line)
+	}
+	if line.starts_with('no ') {
+		msg := 'version not found'
+		if failure {
+			return error(msg)
+		}
+		println(msg)
+		return '', ''
+	}
+	ver := if m := re_verline.exec(line, 0) {
+		m.group_text(line, 1) or { return unreachable() }
+	} else {
+		return error('unexpected output of newchanges: "${line}"')
+	}
+
+	return ver, log
+}
+
+fn do_publish(ver string, assets []string, log string, commit bool, tag bool, push bool, release bool, failure bool, yes bool, verbose bool) ! {
+	do_commit(ver, commit, tag, failure)!
+
+	repo_path, gh_token := if release {
+		path := get_repo_path()!
+		token := get_gh_token()!
+		if was_released(path, ver, token)! {
+			msg := 'version ${ver} has been already released'
+			if failure {
+				return error(msg)
+			}
+			println(msg)
+			return
+		}
+		path, token
+	} else {
+		'', ''
+	}
+
+	mut pushed := false
+	prompt := if release {
+		' and release'
+	} else {
+		''
+	}
+	if push && (yes || confirm('push${prompt} version ${ver}')!) {
+		out := execute('git push --atomic origin HEAD "v${ver}"')!
+		d.log_str(out)
+		eprintln('')
+		println('pushed version ${ver}')
+		pushed = true
+	}
+
+	if release && (pushed || yes || confirm('release version ${ver}')!) {
+		post_release(repo_path, ver, log, gh_token)!
+		println('released version ${ver}')
+	}
+}
+
+fn was_released(repo_path string, ver string, token string) !bool {
+	url := 'https://api.github.com/repos/${repo_path}/releases/tags/v${ver}'
+	d.log('getting "%s"', url)
+	mut req := Request{
+		method: .get
+		url: url
+	}
+	req.add_header(.accept, 'application/vnd.github+json')
+	req.add_header(.authorization, 'Bearer ${token}')
+	req.add_custom_header('X-GitHub-Api-Version', '2022-11-28')!
+	res := req.do()!
+	d.log('received "%s"', res.body)
+	if res.status_code == 200 {
+		return true
+	} else if res.status_code == 404 {
+		return false
+	}
+	return error('${res.status_code}: ${res.status_msg}')
+}
+
+fn post_release(repo_path string, version string, log string, token string) ! {
+	url := 'https://api.github.com/repos/${repo_path}/releases'
+	body := stringify(Any(log), StringifyOpts{})
+	data := '{"tag_name":"v${version}","name":"${version}","body":${body}}'
+	d.log('posting "%s" to "%s"', data, url)
+	mut req := Request{
+		method: .post
+		url: url
+		data: data
+	}
+	req.add_header(.accept, 'application/vnd.github+json')
+	req.add_header(.authorization, 'Bearer ${token}')
+	req.add_header(.content_type, 'application/json')
+	req.add_custom_header('X-GitHub-Api-Version', '2022-11-28')!
+	res := req.do()!
+	if res.status_code != 201 {
+		panic(error('${res.status_code}: ${res.status_msg}'))
+	}
+	d.log('received "%s"', res.body)
+}
+
+fn get_repo_path() !string {
+	_, git_path := find_file('.git') or { return error('missing ".git" directory') }
+
+	url, found := get_repo_url(git_path)!
+	if !found {
+		return error('url in ".git/config" not detected')
+	}
+
+	re_name := pcre_compile(r'^.+github.com[:/]([^/]+/(?:.+))\.git$', 0) or { panic(err) }
+	m := re_name.exec(url, 0) or {
+		return if err is NoMatch {
+			error('unsupported git url "${url}"')
+		} else {
+			err
+		}
+	}
+	path := m.group_text(url, 1) or { return unreachable() }
+
+	d.log('git repo "path" detected', path)
+	return path
+}
+
+fn get_gh_token() !string {
+	return getenv_opt('GITHUB_TOKEN') or {
+		getenv_opt('GH_TOKEN') or {
+			return error('github token provided by neither GITHUB_TOKEN nor GH_TOKEN')
+		}
+	}
+}
