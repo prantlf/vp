@@ -1,7 +1,10 @@
 import os
 import prantlf.debug { rwd }
 
-#include <ntifs.h>
+#flag -I @VROOT/src
+// #include <ntifs.h>
+#include "resolve-link_win.h"
+#include <winioctl.h>
 #include <ioapiset.h>
 
 fn C.CreateFileW(&u16, u32, u32, voidptr, u32, u32, voidptr) voidptr
@@ -9,7 +12,7 @@ fn C.CloseHandle(voidptr) bool
 fn C.DeviceIoControl(voidptr, int, voidptr, int, voidptr, int, &int, voidptr) bool
 
 [typedef]
-struct C.REPARSE_DATA_BUFFER {
+struct C.VP_REPARSE_DATA_BUFFER {
 	ReparseTag        u32
 	ReparseDataLength u16
 	Reserved          u16
@@ -47,19 +50,19 @@ fn resolve_link(path string) !string {
 	defer {
 		C.CloseHandle(fh)
 	}
-	mut buf := []u8{len: C.MAXIMUM_REPARSE_DATA_BUFFER_SIZE}
+	mut buf := []u8{len: C.MAXIMUM_VP_REPARSE_DATA_BUFFER_SIZE}
 	mut size := 0
 	if !C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size, 0) {
 		return error('enquiring link "${rwd(path)}" failed: ${os.last_error()}')
 	}
-	data := unsafe { &C.REPARSE_DATA_BUFFER(buf.data) }
-	if (data.ReparseTag != C.IO_REPARSE_TAG_SYMLINK) {
+	data := unsafe { &C.VP_REPARSE_DATA_BUFFER(buf.data) }
+	if data.ReparseTag != C.IO_REPARSE_TAG_SYMLINK {
 		return error('"${rwd(path)}" is no symlink')
 	}
-	length = data.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(u16)
-	offset = data.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(u16)
+	length := data.SubstituteNameLength / sizeof(u16)
+	offset := data.SubstituteNameOffset / sizeof(u16)
 	link_path := unsafe {
-		string_from_wide2(&data.SymbolicLinkReparseBuffer.PathBuffer + offset, length)
+		string_from_wide2(&data.PathBuffer + offset, length)
 	}
 	dlink_path := d.rwd(link_path)
 	d.log('resolved to "%s"', dlink_path)
