@@ -50,7 +50,7 @@ fn resolve_link(path string) !string {
 	defer {
 		C.CloseHandle(fh)
 	}
-	mut buf := []u8{len: C.MAXIMUM_VP_REPARSE_DATA_BUFFER_SIZE}
+	mut buf := []u8{len: C.MAXIMUM_REPARSE_DATA_BUFFER_SIZE}
 	mut size := 0
 	if !C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size, 0) {
 		return error('enquiring link "${rwd(path)}" failed: ${os.last_error()}')
