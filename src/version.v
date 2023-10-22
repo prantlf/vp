@@ -24,7 +24,7 @@ fn create_version(version string, changes bool, bump bool, commit bool, tag bool
 	mut ver := ''
 	mut log := ''
 	if changes {
-		out := execute_opt('newchanges -nv', ExecuteOpts{
+		out := execute_opt('newchanges -Nv', ExecuteOpts{
 			trim_trailing_whitespace: true
 		})!
 		log = until_last_nth_line_not_empty(out, 2)
