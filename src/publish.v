@@ -197,7 +197,7 @@ fn get_repo_path() !string {
 	}
 	path := m.group_text(url, 1) or { return unreachable() }
 
-	d.log('git repo "path" detected', path)
+	d.log('git repo "%s" detected', path)
 	return path
 }
 
