@@ -1,5 +1,11 @@
 # Changes
 
+## [0.1.2](https://github.com/prantlf/vp/compare/v0.1.1...v0.1.2) (2023-10-22)
+
+### Bug Fixes
+
+* Include assets in the release confirm prompt ([9b381be](https://github.com/prantlf/vp/commit/9b381bee1e69c8602561a5c350e0ebc42cdc521c))
+
 ## [0.1.1](https://github.com/prantlf/vp/compare/v0.1.0...v0.1.1) (2023-10-22)
 
 ### Bug Fixes
