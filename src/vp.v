@@ -32,8 +32,9 @@ Options for version, publish and release:
   --no-tag           do not tag the commit during publishing
   --no-push          do not push the commit and tag during publishing
   --no-release       do not create a new github release
+  --no-archives      do not upload platform archives automatically as assets
   --no-failure       do not fail in case of no version change or release
-  -a|--assets <file> files to upload as assets to the github release
+  -a|--assets <file> files to upload as extra assets to the github release
   -y|--yes           answer the push and reelase confirmations with "yes"
   -v|--verbose       print the new changes on the console too
 
@@ -48,17 +49,18 @@ Examples:
   $ vp publish -v'
 
 struct Opts {
-	force   bool
-	changes bool = true
-	bump    bool = true
-	commit  ?bool
-	tag     ?bool
-	push    bool = true
-	release bool = true
-	failure bool = true
-	assets  []string
-	yes     bool
-	verbose bool
+	force    bool
+	changes  bool = true
+	bump     bool = true
+	commit   ?bool
+	tag      ?bool
+	push     bool = true
+	release  bool = true
+	archives bool = true
+	failure  bool = true
+	assets   []string
+	yes      bool
+	verbose  bool
 }
 
 fn main() {
@@ -100,14 +102,14 @@ fn body(mut opts Opts, args []string) ! {
 		'publish' {
 			commit := opts.commit or { false }
 			tag := opts.tag or { false }
-			publish(opts.assets, commit, tag, opts.push, opts.release, opts.failure, opts.yes,
-				opts.verbose)!
+			publish(opts.assets, commit, tag, opts.push, opts.release, opts.archives,
+				opts.failure, opts.yes, opts.verbose)!
 		}
 		'release' {
 			commit := opts.commit or { true }
 			tag := opts.tag or { true }
 			version_and_publish(first_arg, opts.assets, opts.changes, opts.bump, commit,
-				tag, opts.push, opts.release, opts.failure, opts.yes, opts.verbose)!
+				tag, opts.push, opts.release, opts.archives, opts.failure, opts.yes, opts.verbose)!
 		}
 		else {
 			return error('Command "${command}" is invalid.')

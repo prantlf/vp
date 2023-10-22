@@ -18,6 +18,7 @@ Helps with development, installation and maintenance of VPM packages.
 
     Commands:
       link          links the current module to the global ~./vmodules directory
+      unlink        remove the current module link from the global ~./vmodules
       version       prepare the current module for publishing a new version
                     (update changelog, bump version, commit and tag the change)
       publish       publish a new version prepared earlier by `vp version`
@@ -35,15 +36,17 @@ Helps with development, installation and maintenance of VPM packages.
                     (also major, minor or patch for bumping the existing version)
 
     Options for version, publish and release:
-      --no-changes  do not update the changelog
-      --no-bump     do not bumpt the version in the package manifest
-      --no-commit   do not commit the changes during publishing
-      --no-tag      do not tag the commit during publishing
-      --no-push     do not push the commit and tag during publishing
-      --no-release  do not create a new github release
-      --no-failure  do not fail in case of no version change or release
-      -y|--yes      answer the push confirmation with "yes"
-      -v|--verbose  print the new changes on the console too
+      --no-changes       do not update the changelog
+      --no-bump          do not bumpt the version in the package manifest
+      --no-commit        do not commit the changes during publishing
+      --no-tag           do not tag the commit during publishing
+      --no-push          do not push the commit and tag during publishing
+      --no-release       do not create a new github release
+      --no-archives      do not upload platform archives automatically as assets
+      --no-failure       do not fail in case of no version change or release
+      -a|--assets <file> files to upload as extra assets to the github release
+      -y|--yes           answer the push confirmation with "yes"
+      -v|--verbose       print the new changes on the console too
 
     Common options:
       -V|--version  prints the version of the executable and exits
@@ -74,38 +77,48 @@ Publishing a package usually means the following steps:
 
 1. Update the changelog. One of the tools automating the task using the commit messages is [newchanges]:
 
-    ❯ newchanges
-    discovered 1 significant commit from 1 total since v0.2.1
-    version 0.3.0 (2023-08-13) and 10 lines written to "./CHANGELOG.md"
+```
+❯ newchanges
+discovered 1 significant commit from 1 total since v0.2.1
+version 0.3.0 (2023-08-13) and 10 lines written to "./CHANGELOG.md"
+```
 
 2. Bump the version number if the package manifest:
 
-    ❯ v bump --minor
-    Bumped version in v.mod
+```
+❯ v bump --minor
+Bumped version in v.mod
+```
 
 3. Commit the above changes:
 
-    ❯ git commit -am "0.3.0 [skip ci]"
-    [master 0bea6c0] 0.3.0 [skip ci]
+```
+❯ git commit -am "0.3.0 [skip ci]"
+[master 0bea6c0] 0.3.0 [skip ci]
 
-    2 files changed, 12 insertions(+), 1 deletion(-)
+2 files changed, 12 insertions(+), 1 deletion(-)
+```
 
 4. Tag the above Commit:
 
-    ❯ git tag -a v0.3.0 -m 0.3.0
+```
+❯ git tag -a v0.3.0 -m 0.3.0
+```
 
 5. Push the commit and the tag:
 
-    ❯ git push --atomic origin HEAD v0.3.0
-    Enumerating objects: 5, done.
-    Counting objects: 100% (5/5), done.
-    Delta compression using up to 12 threads
-    Compressing objects: 100% (3/3), done.
-    Writing objects: 100% (3/3), 507 bytes | 507.00 KiB/s, done.
-    Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
-    remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
-    To github.com:prantlf/v-yaml.git
-    32fffa8..b179a2d  master -> master
+```
+❯ git push --atomic origin HEAD v0.3.0
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 507 bytes | 507.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:prantlf/v-yaml.git
+32fffa8..b179a2d  master -> master
+```
 
 6. Create a new GitHub release.
 
@@ -113,7 +126,51 @@ Publishing a package usually means the following steps:
 
 All the commands above can be shortened with:
 
-    ❯ vp publish
+    ❯ vp release
+
+That's how a new version of a library can be released from a local machine, once the last pushed productive change was built successfully.
+
+### Pipeline
+
+A new version can be published during the build job too, if it succeeds. The process is divided to two parts, one to be executed before the build and one after it:
+
+1. Update the changelog and bump the version number in the source files:
+
+```
+❯ vp version --no-commit
+```
+
+2. Run the build and tests:
+
+```
+❯ make RELEASE=1
+```
+
+3. Commit and push the changes related to the new version and create a new release:
+
+```
+❯ vp publish
+```
+
+If the pipeline consists of multiple jobs, you can repeat the version bumping in the release job:
+
+1. Build job: Update the changelog and bump the version number in the source files:
+
+```
+❯ vp version --no-commit
+```
+
+2. Build job: Run the build and tests:
+
+```
+❯ make RELEASE=1
+```
+
+3. Release job: Update the changelog and bump the version number in the source files, commit and push the changes related to the new version and create a new release:
+
+```
+❯ vp release
+```
 
 ## Contributing
 

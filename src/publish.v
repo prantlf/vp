@@ -1,12 +1,13 @@
 import net.http { Request }
-import os { getenv_opt }
+import net.urllib { query_escape }
+import os { getenv_opt, ls, read_file }
 import prantlf.jany { Any }
-import prantlf.json { StringifyOpts, stringify }
+import prantlf.json { ParseOpts, StringifyOpts, parse, stringify }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
 
-fn publish(assets []string, commit bool, tag bool, push bool, release bool, failure bool, yes bool, verbose bool) ! {
+fn publish(assets []string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, verbose bool) ! {
 	ver, log := if release {
 		get_last_version(failure, verbose)!
 	} else {
@@ -14,7 +15,8 @@ fn publish(assets []string, commit bool, tag bool, push bool, release bool, fail
 		manifest.version, ''
 	}
 	if ver.len > 0 {
-		do_publish(ver, assets, log, commit, tag, push, release, failure, yes, verbose)!
+		do_publish(ver, assets, log, commit, tag, push, release, upload, failure, yes,
+			verbose)!
 	}
 }
 
@@ -46,7 +48,7 @@ fn get_last_version(failure bool, verbose bool) !(string, string) {
 	return ver, log
 }
 
-fn do_publish(ver string, assets []string, log string, commit bool, tag bool, push bool, release bool, failure bool, yes bool, verbose bool) ! {
+fn do_publish(ver string, assets []string, log string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, verbose bool) ! {
 	do_commit(ver, commit, tag, failure)!
 
 	repo_path, gh_token := if release {
@@ -80,8 +82,13 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 	}
 
 	if release && (pushed || yes || confirm('release version ${ver}')!) {
-		post_release(repo_path, ver, log, gh_token)!
-		println('released version ${ver}')
+		archives := post_release(repo_path, ver, log, assets, upload, gh_token)!
+		suffix := if archives.len > 0 {
+			' with ${archives.join(', ')}'
+		} else {
+			''
+		}
+		println('released version ${ver}${suffix}')
 	}
 }
 
@@ -105,7 +112,7 @@ fn was_released(repo_path string, ver string, token string) !bool {
 	return error('${res.status_code}: ${res.status_msg}')
 }
 
-fn post_release(repo_path string, version string, log string, token string) ! {
+fn post_release(repo_path string, version string, log string, assets []string, upload bool, token string) ![]string {
 	url := 'https://api.github.com/repos/${repo_path}/releases'
 	body := stringify(Any(log), StringifyOpts{})
 	data := '{"tag_name":"v${version}","name":"${version}","body":${body}}'
@@ -118,6 +125,52 @@ fn post_release(repo_path string, version string, log string, token string) ! {
 	req.add_header(.accept, 'application/vnd.github+json')
 	req.add_header(.authorization, 'Bearer ${token}')
 	req.add_header(.content_type, 'application/json')
+	req.add_custom_header('X-GitHub-Api-Version', '2022-11-28')!
+	res := req.do()!
+	if res.status_code != 201 {
+		panic(error('${res.status_code}: ${res.status_msg}'))
+	}
+	d.log('received "%s"', res.body)
+	params := parse(res.body, ParseOpts{})!.object()!
+	// mut urlBase := params['upload_url'].string()!
+	// urlBase = '${url[..url.index_u8(`{`)]}?name='
+	id := params['id']!.int()!
+	return add_assets(repo_path, id, assets, upload, token)!
+}
+
+fn add_assets(repo_path string, id int, assets []string, upload bool, token string) ![]string {
+	mut archives := if upload {
+		_, _, manifest := get_manifest()!
+		d.log_str('listing files in the current directory')
+		prefix := '${manifest.name}-'
+		files := ls('.')!
+		filtered := files.filter(it.ends_with('-x64.zip') && it.starts_with(prefix))
+		d.log('filtered %d archives from %d files', filtered.len, files.len)
+		filtered
+	} else {
+		[]string{cap: assets.len}
+	}
+	archives << assets
+	for archive in archives {
+		add_asset(repo_path, id, archive, token)!
+	}
+	return archives
+}
+
+fn add_asset(repo_path string, id int, name string, token string) ! {
+	data := read_file(name)!
+	// url := '${urlBase}?name=${query_escape(name)}'
+	url := 'https://uploads.github.com/repos/${repo_path}/releases/${id}/assets?name=${query_escape(name)}'
+	d.log('posting "%s" to "%s"', name, url)
+	mut req := Request{
+		method: .post
+		url: url
+		data: data
+	}
+	req.add_header(.accept, 'application/vnd.github+json')
+	req.add_header(.authorization, 'Bearer ${token}')
+	req.add_header(.content_type, 'application/zip')
+	req.add_header(.content_length, data.len.str())
 	req.add_custom_header('X-GitHub-Api-Version', '2022-11-28')!
 	res := req.do()!
 	if res.status_code != 201 {
