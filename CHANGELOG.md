@@ -1,5 +1,11 @@
 # Changes
 
+## [0.1.3](https://github.com/prantlf/vp/compare/v0.1.2...v0.1.3) (2023-10-22)
+
+### Bug Fixes
+
+* Add release assets to be uploaded to the prompt ([21e6da7](https://github.com/prantlf/vp/commit/21e6da788894cfad37a8fa6da1679ad63365ff27))
+
 ## [0.1.2](https://github.com/prantlf/vp/compare/v0.1.1...v0.1.2) (2023-10-22)
 
 ### Bug Fixes
