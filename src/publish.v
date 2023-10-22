@@ -67,26 +67,27 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 		'', ''
 	}
 
-	prompt := if release {
-		' and release'
-	} else {
-		''
-	}
-	if push && (yes || confirm('push${prompt} version ${ver}')!) {
+	if push && (yes || confirm('push version ${ver}')!) {
 		out := execute('git push --atomic origin HEAD "v${ver}"')!
 		d.log_str(out)
 		eprintln('')
 		println('pushed version ${ver}')
 	}
 
-	if release && (yes || confirm('release version ${ver}')!) {
-		archives := post_release(repo_path, ver, log, assets, upload, gh_token)!
-		suffix := if archives.len > 0 {
+	if release {
+		archives := collect_assets(assets, upload)!
+		mut suffix := if archives.len > 0 {
 			' with ${archives.join(', ')}'
 		} else {
 			''
 		}
-		println('released version ${ver}${suffix}')
+		if yes || confirm('release version ${ver}')! {
+			post_release(repo_path, ver, log, archives, gh_token)!
+			if !yes {
+				suffix = ''
+			}
+			println('released version ${ver}${suffix}')
+		}
 	}
 }
 
@@ -110,7 +111,7 @@ fn was_released(repo_path string, ver string, token string) !bool {
 	return error('${res.status_code}: ${res.status_msg}')
 }
 
-fn post_release(repo_path string, version string, log string, assets []string, upload bool, token string) ![]string {
+fn post_release(repo_path string, version string, log string, assets []string, token string) ! {
 	url := 'https://api.github.com/repos/${repo_path}/releases'
 	body := stringify(Any(log), StringifyOpts{})
 	data := '{"tag_name":"v${version}","name":"${version}","body":${body}}'
@@ -133,10 +134,12 @@ fn post_release(repo_path string, version string, log string, assets []string, u
 	// mut urlBase := params['upload_url'].string()!
 	// urlBase = '${url[..url.index_u8(`{`)]}?name='
 	id := params['id']!.int()!
-	return add_assets(repo_path, id, assets, upload, token)!
+	for asset in assets {
+		add_asset(repo_path, id, asset, token)!
+	}
 }
 
-fn add_assets(repo_path string, id int, assets []string, upload bool, token string) ![]string {
+fn collect_assets(assets []string, upload bool) ![]string {
 	mut archives := if upload {
 		_, _, manifest := get_manifest()!
 		d.log_str('listing files in the current directory')
@@ -149,9 +152,6 @@ fn add_assets(repo_path string, id int, assets []string, upload bool, token stri
 		[]string{cap: assets.len}
 	}
 	archives << assets
-	for archive in archives {
-		add_asset(repo_path, id, archive, token)!
-	}
 	return archives
 }
 
