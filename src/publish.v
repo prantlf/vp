@@ -67,7 +67,6 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 		'', ''
 	}
 
-	mut pushed := false
 	prompt := if release {
 		' and release'
 	} else {
@@ -78,10 +77,9 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 		d.log_str(out)
 		eprintln('')
 		println('pushed version ${ver}')
-		pushed = true
 	}
 
-	if release && (pushed || yes || confirm('release version ${ver}')!) {
+	if release && (yes || confirm('release version ${ver}')!) {
 		archives := post_release(repo_path, ver, log, assets, upload, gh_token)!
 		suffix := if archives.len > 0 {
 			' with ${archives.join(', ')}'
