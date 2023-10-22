@@ -1,5 +1,12 @@
 # Changes
 
+## [0.1.1](https://github.com/prantlf/vp/compare/v0.1.0...v0.1.1) (2023-10-22)
+
+### Bug Fixes
+
+* Ask for both pushing and releasing separately ([f33a3ca](https://github.com/prantlf/vp/commit/f33a3ca5ffe8e03bff024f84050debdd4a6fc6f4))
+* Do not fail if newchanges cannot find any commit ([037d825](https://github.com/prantlf/vp/commit/037d82509491b8cddc2960452208cef8f9105fa0))
+
 ## [0.1.0](https://github.com/prantlf/vp/compare/v0.0.1...v0.1.0) (2023-10-22)
 
 ### Features
