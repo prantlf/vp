@@ -1,5 +1,11 @@
 # Changes
 
+## [0.1.4](https://github.com/prantlf/vp/compare/v0.1.3...v0.1.4) (2023-10-22)
+
+### Bug Fixes
+
+* Have newchanges try fetching the missing history ([3b3096f](https://github.com/prantlf/vp/commit/3b3096fe7ce5131941a0562804be2f584c816b43))
+
 ## [0.1.3](https://github.com/prantlf/vp/compare/v0.1.2...v0.1.3) (2023-10-22)
 
 ### Bug Fixes
