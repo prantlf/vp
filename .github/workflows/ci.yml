@@ -60,13 +60,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v4
     - name: Unshelve output
-      uses: prantlf/unshelve-output-action@v2
-      with:
-        include-windows: false
-    - name: Discard shelf
-      uses: prantlf/discard-shelf-action@v3
-      with:
-        include-windows: false
+      uses: prantlf/unshelve-output-action@v3
     - name: Archive artifacts
       uses: actions/upload-artifact@v3
       with:
