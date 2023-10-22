@@ -81,7 +81,7 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 		} else {
 			''
 		}
-		if yes || confirm('release version ${ver}')! {
+		if yes || confirm('release version ${ver}${suffix}')! {
 			post_release(repo_path, ver, log, archives, gh_token)!
 			if !yes {
 				suffix = ''
