@@ -1,9 +1,7 @@
 import os
 import v.vmod
-import prantlf.debug { new_debug, rwd }
+import prantlf.debug { new_debug }
 import prantlf.pcre { NoMatch, pcre_compile }
-
-fn C.readlink(pathname &char, buf &char, bufsiz usize) int
 
 const d = new_debug('vp')
 
@@ -42,20 +40,6 @@ fn get_link(args []string, forced_name string, force bool) !(string, string) {
 	dmodule_dir := d.rwd(module_dir)
 	d.log('link "%s" computed for the directory "%s"', dlink_path, dmodule_dir)
 	return link_path, module_dir
-}
-
-fn resolve_link(path string) !string {
-	dpath := d.rwd(path)
-	d.log('resolving the link "%s"', dpath)
-	mut result := [os.max_path_len + 1]u8{}
-	len := C.readlink(path.str, &result[0], os.max_path_len)
-	if len < 0 {
-		return error('resolving the link "${rwd(path)}" failed: ${os.last_error()}')
-	}
-	full_path := unsafe { (&result[0]).vstring_with_len(len) }
-	dfull_path := d.rwd(full_path)
-	d.log('resolved to "%s"', dfull_path)
-	return full_path
 }
 
 fn find_manifest() !(string, string) {
