@@ -5,7 +5,7 @@ import prantlf.jany { Any }
 import prantlf.json { ParseOpts, StringifyOpts, parse, stringify }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, pcre_compile }
-import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
+import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
 
 fn publish(assets []string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, dry bool, verbose bool) ! {
 	ver, log := if release {
@@ -26,7 +26,7 @@ fn get_last_version(failure bool, verbose bool) !(string, string) {
 	out := execute_opt('newchanges -iv', ExecuteOpts{
 		trim_trailing_whitespace: true
 	})!
-	log := until_last_nth_line_not_empty(out, 2)
+	log := until_one_but_last_line_not_empty(out)
 	line := last_line_not_empty(out)
 	if verbose {
 		println(out)
