@@ -1,5 +1,11 @@
 # Changes
 
+## [0.2.2](https://github.com/prantlf/vp/compare/v0.2.1...v0.2.2) (2023-10-23)
+
+### Bug Fixes
+
+* Do not cut off the last line in the published log ([f2e62ff](https://github.com/prantlf/vp/commit/f2e62ff2ba12613113a2a2dc9e1ddc98814878e7))
+
 ## [0.2.1](https://github.com/prantlf/vp/compare/v0.2.0...v0.2.1) (2023-10-23)
 
 ### Bug Fixes
