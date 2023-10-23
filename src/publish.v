@@ -18,8 +18,7 @@ fn publish(assets []string, commit bool, tag bool, push bool, release bool, uplo
 		if commit {
 			do_commit(ver, commit, tag, failure, dry)!
 		}
-		do_publish(ver, assets, log, push, release, upload, failure, yes,
-			dry, verbose)!
+		do_publish(ver, assets, log, push, release, upload, failure, yes, dry, verbose)!
 	}
 }
 
