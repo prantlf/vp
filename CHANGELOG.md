@@ -1,5 +1,11 @@
 # Changes
 
+## [0.2.1](https://github.com/prantlf/vp/compare/v0.2.0...v0.2.1) (2023-10-23)
+
+### Bug Fixes
+
+* Recognise a github home page url as git url ([3ce8ade](https://github.com/prantlf/vp/commit/3ce8ade16301aec640259ccbd7e0ff4f6e344246))
+
 ## [0.2.0](https://github.com/prantlf/vp/compare/v0.1.4...v0.2.0) (2023-10-23)
 
 ### Features
