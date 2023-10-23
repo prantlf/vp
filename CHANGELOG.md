@@ -1,5 +1,11 @@
 # Changes
 
+## [0.2.0](https://github.com/prantlf/vp/compare/v0.1.4...v0.2.0) (2023-10-23)
+
+### Features
+
+* Implement dry-run ([c523d2d](https://github.com/prantlf/vp/commit/c523d2d48e726d7a55d1439ce0275ef3d1efa254))
+
 ## [0.1.4](https://github.com/prantlf/vp/compare/v0.1.3...v0.1.4) (2023-10-22)
 
 ### Bug Fixes
