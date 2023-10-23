@@ -69,7 +69,7 @@ fn analyse_module(force bool) !(string, string, string) {
 			return error('missing ".git"${hint}')
 		}
 	}
-	url, found := get_repo_url(git_path)!
+	mut url, found := get_repo_url(git_path)!
 	if !found {
 		if force {
 			d.log_str('missing git repository url')
@@ -78,7 +78,10 @@ fn analyse_module(force bool) !(string, string, string) {
 		}
 	}
 
-	re_name := pcre_compile(r'.+github.com[:/]([^/]+)/([^.]+)', 0) or { panic(err) }
+	if url.starts_with('git@') && url.ends_with('.git') {
+		url = url[..url.len - 4]
+	}
+	re_name := pcre_compile(r'^.+github\.com[:/]([^/]+)/(.+)', 0) or { panic(err) }
 	m := re_name.exec(url, 0) or {
 		if err is NoMatch {
 			if force {

@@ -190,12 +190,15 @@ fn add_asset(repo_path string, id int, name string, token string) ! {
 fn get_repo_path() !string {
 	_, git_path := find_file('.git') or { return error('missing ".git" directory') }
 
-	url, found := get_repo_url(git_path)!
+	mut url, found := get_repo_url(git_path)!
 	if !found {
 		return error('url in ".git/config" not detected')
 	}
 
-	re_name := pcre_compile(r'^.+github.com[:/]([^/]+/(?:.+))\.git$', 0) or { panic(err) }
+	if url.starts_with('git@') && url.ends_with('.git') {
+		url = url[..url.len - 4]
+	}
+	re_name := pcre_compile(r'^.+github\.com[:/]([^/]+/(?:.+))', 0) or { panic(err) }
 	m := re_name.exec(url, 0) or {
 		return if err is NoMatch {
 			error('unsupported git url "${url}"')
