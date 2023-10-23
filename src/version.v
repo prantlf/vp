@@ -13,7 +13,7 @@ const (
 	re_vernum  = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', 0)!
 )
 
-fn create_version(version string, changes bool, bump bool, commit bool, tag bool, failure bool, verbose bool) !(string, string) {
+fn create_version(version string, changes bool, bump bool, commit bool, tag bool, failure bool, dry bool, verbose bool) !(string, string) {
 	vmod_file := if !changes || bump {
 		_, file := find_manifest()!
 		file
@@ -21,10 +21,15 @@ fn create_version(version string, changes bool, bump bool, commit bool, tag bool
 		''
 	}
 
+	mode := if dry {
+		'd'
+	} else {
+		''
+	}
 	mut ver := ''
 	mut log := ''
 	if changes {
-		out := execute_opt('newchanges -Nuv', ExecuteOpts{
+		out := execute_opt('newchanges -Nuv${mode}', ExecuteOpts{
 			trim_trailing_whitespace: true
 		})!
 		log = until_last_nth_line_not_empty(out, 2)
@@ -52,15 +57,21 @@ fn create_version(version string, changes bool, bump bool, commit bool, tag bool
 	}
 
 	if bump {
-		update_version(vmod_file, ver, failure, true, true)!
+		update_version(vmod_file, ver, failure, true, dry)!
 	}
 
-	do_commit(ver, commit, tag, failure)!
+	do_commit(ver, commit, tag, failure, dry)!
 
 	return ver, log
 }
 
-fn do_commit(ver string, commit bool, tag bool, failure bool) ! {
+fn do_commit(ver string, commit bool, tag bool, failure bool, dry bool) ! {
+	mode := if dry {
+		' (dry-run)'
+	} else {
+		''
+	}
+
 	if commit {
 		if tag {
 			out := execute_opt('git tag -l "v${ver}"', ExecuteOpts{
@@ -77,6 +88,11 @@ fn do_commit(ver string, commit bool, tag bool, failure bool) ! {
 			}
 		}
 
+		if dry {
+			println('prepared version ${ver} for committing${mode}')
+			return
+		}
+
 		mut out := execute('git commit -am "${ver} [skip ci]"')!
 		d.log_str(out)
 		eprintln('')
@@ -90,7 +106,7 @@ fn do_commit(ver string, commit bool, tag bool, failure bool) ! {
 			println('prepared version ${ver} for tagging')
 		}
 	} else {
-		println('prepared version ${ver} for committing')
+		println('prepared version ${ver} for committing${mode}')
 	}
 }
 
@@ -133,7 +149,7 @@ fn get_increment(version string) ?Increment {
 	}
 }
 
-fn update_version(file string, ver string, failure bool, required bool, write bool) ! {
+fn update_version(file string, ver string, failure bool, required bool, dry bool) ! {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	contents := read_file(file)!
@@ -179,9 +195,13 @@ fn update_version(file string, ver string, failure bool, required bool, write bo
 		return
 	}
 
-	d.log('writing file "%s"', dfile)
-	mut f := create(file)!
-	data := unsafe { builder.reuse_as_plain_u8_array() }
-	f.write(data)!
-	f.close()
+	if !dry {
+		d.log('writing file "%s"', dfile)
+		mut f := create(file)!
+		defer {
+			f.close()
+		}
+		data := unsafe { builder.reuse_as_plain_u8_array() }
+		f.write(data)!
+	}
 }

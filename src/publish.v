@@ -7,7 +7,7 @@ import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
 
-fn publish(assets []string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, verbose bool) ! {
+fn publish(assets []string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, dry bool, verbose bool) ! {
 	ver, log := if release {
 		get_last_version(failure, verbose)!
 	} else {
@@ -15,8 +15,11 @@ fn publish(assets []string, commit bool, tag bool, push bool, release bool, uplo
 		manifest.version, ''
 	}
 	if ver.len > 0 {
-		do_publish(ver, assets, log, commit, tag, push, release, upload, failure, yes,
-			verbose)!
+		if commit {
+			do_commit(ver, commit, tag, failure, dry)!
+		}
+		do_publish(ver, assets, log, push, release, upload, failure, yes,
+			dry, verbose)!
 	}
 }
 
@@ -48,9 +51,7 @@ fn get_last_version(failure bool, verbose bool) !(string, string) {
 	return ver, log
 }
 
-fn do_publish(ver string, assets []string, log string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, verbose bool) ! {
-	do_commit(ver, commit, tag, failure)!
-
+fn do_publish(ver string, assets []string, log string, push bool, release bool, upload bool, failure bool, yes bool, dry bool, verbose bool) ! {
 	repo_path, gh_token := if release {
 		path := get_repo_path()!
 		token := get_gh_token()!
@@ -67,11 +68,19 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 		'', ''
 	}
 
-	if push && (yes || confirm('push version ${ver}')!) {
-		out := execute('git push --atomic origin HEAD "v${ver}"')!
-		d.log_str(out)
-		eprintln('')
-		println('pushed version ${ver}')
+	mode := if dry {
+		' (dry-run)'
+	} else {
+		''
+	}
+
+	if push && (yes || confirm('push version ${ver}${mode}')!) {
+		if !dry {
+			out := execute('git push --atomic origin HEAD "v${ver}"')!
+			d.log_str(out)
+			eprintln('')
+		}
+		println('pushed version ${ver}${mode}')
 	}
 
 	if release {
@@ -81,12 +90,14 @@ fn do_publish(ver string, assets []string, log string, commit bool, tag bool, pu
 		} else {
 			''
 		}
-		if yes || confirm('release version ${ver}${suffix}')! {
-			post_release(repo_path, ver, log, archives, gh_token)!
+		if yes || confirm('release version ${ver}${suffix}${mode}')! {
+			if !dry {
+				post_release(repo_path, ver, log, archives, gh_token)!
+			}
 			if !yes {
 				suffix = ''
 			}
-			println('released version ${ver}${suffix}')
+			println('released version ${ver}${suffix}${mode}')
 		}
 	}
 }

@@ -33,15 +33,15 @@ fn test_get_version_major() {
 }
 
 fn test_update_version_exists() {
-	update_version('v.mod', '1.0.0', true, false)!
+	update_version('v.mod', '1.0.0', true, true)!
 }
 
 fn test_update_version_exists_but_same() {
-	update_version('v.mod', '0.0.1', true, false)!
+	update_version('v.mod', '0.0.1', true, true)!
 }
 
 fn test_update_version_same() {
-	update_version('v.mod', '0.0.1', true, false) or {
+	update_version('v.mod', '0.0.1', true, true) or {
 		assert err.msg() == 'version already exists in "v.mod"'
 		return
 	}
@@ -49,7 +49,7 @@ fn test_update_version_same() {
 }
 
 fn test_update_version_not_exist() {
-	update_version('Makefile', '1.0.0', true, false) or {
+	update_version('Makefile', '1.0.0', true, true) or {
 		assert err.msg() == 'version not found in "Makefile"'
 		return
 	}
@@ -57,5 +57,5 @@ fn test_update_version_not_exist() {
 }
 
 fn test_update_version_not_exist_but_not_required() {
-	update_version('Makefile', '0.0.1', false, false)!
+	update_version('Makefile', '0.0.1', false, true)!
 }

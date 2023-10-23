@@ -36,6 +36,7 @@ Options for version, publish and release:
   --no-failure       do not fail in case of no version change or release
   -a|--assets <file> files to upload as extra assets to the github release
   -y|--yes           answer the push and reelase confirmations with "yes"
+  -d|--dry-run       only print what would be done without doing it
   -v|--verbose       print the new changes on the console too
 
 Common options:
@@ -60,6 +61,7 @@ struct Opts {
 	failure  bool = true
 	assets   []string
 	yes      bool
+	dry_run  bool
 	verbose  bool
 }
 
@@ -97,19 +99,20 @@ fn body(mut opts Opts, args []string) ! {
 			commit := opts.commit or { true }
 			tag := opts.tag or { true }
 			create_version(first_arg, opts.changes, opts.bump, commit, tag, opts.failure,
-				opts.verbose)!
+				opts.dry_run, opts.verbose)!
 		}
 		'publish' {
 			commit := opts.commit or { false }
 			tag := opts.tag or { false }
 			publish(opts.assets, commit, tag, opts.push, opts.release, opts.archives,
-				opts.failure, opts.yes, opts.verbose)!
+				opts.failure, opts.yes, opts.dry_run, opts.verbose)!
 		}
 		'release' {
 			commit := opts.commit or { true }
 			tag := opts.tag or { true }
 			version_and_publish(first_arg, opts.assets, opts.changes, opts.bump, commit,
-				tag, opts.push, opts.release, opts.archives, opts.failure, opts.yes, opts.verbose)!
+				tag, opts.push, opts.release, opts.archives, opts.failure, opts.yes, opts.dry_run,
+				opts.verbose)!
 		}
 		else {
 			return error('Command "${command}" is invalid.')

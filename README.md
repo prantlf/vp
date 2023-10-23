@@ -46,6 +46,7 @@ Helps with development, installation and maintenance of VPM packages.
       --no-failure       do not fail in case of no version change or release
       -a|--assets <file> files to upload as extra assets to the github release
       -y|--yes           answer the push confirmation with "yes"
+      -d|--dry-run       only print what would be done without doing it
       -v|--verbose       print the new changes on the console too
 
     Common options:
