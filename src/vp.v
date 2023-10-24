@@ -69,6 +69,7 @@ struct Opts {
 	verbose         bool
 	version_detect  string   [json: 'version-detect']  = r'version'
 	version_replace string   [json: 'version-replace'] = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
+	gh_token        string   [json: 'gh-token']
 }
 
 fn main() {

@@ -53,7 +53,7 @@ fn get_last_version(failure bool, verbose bool) !(string, string) {
 fn do_publish(ver string, log string, opts &Opts) ! {
 	repo_path, gh_token := if opts.release {
 		path := get_repo_path()!
-		token := get_gh_token()!
+		token := get_gh_token(opts.gh_token)!
 		if was_released(path, ver, token)! {
 			msg := 'version ${ver} has been already released'
 			if opts.failure {
@@ -212,10 +212,14 @@ fn get_repo_path() !string {
 	return path
 }
 
-fn get_gh_token() !string {
+fn get_gh_token(def_token string) !string {
 	return getenv_opt('GITHUB_TOKEN') or {
 		getenv_opt('GH_TOKEN') or {
-			return error('github token provided by neither GITHUB_TOKEN nor GH_TOKEN')
+			return if def_token.len > 0 {
+				def_token
+			} else {
+				error('github token provided by neither GITHUB_TOKEN nor GH_TOKEN')
+			}
 		}
 	}
 }
