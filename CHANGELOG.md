@@ -1,5 +1,14 @@
 # Changes
 
+## [0.3.0](https://github.com/prantlf/vp/compare/v0.2.2...v0.3.0) (2023-10-24)
+
+### Features
+
+* Allow bumping version number in other files than v.mod ([9b8507b](https://github.com/prantlf/vp/commit/9b8507ba91f59616c1c7295a90c31784ef109cbf))
+* Allow specifying cli options in config file ([e20e2e1](https://github.com/prantlf/vp/commit/e20e2e15c6b4a812fb6a7070b2c34a2b4512fc60))
+* Allow configuring regexes for version detection and replacement ([b4a1f92](https://github.com/prantlf/vp/commit/b4a1f92601715859b36c1a2c2632e653c486d90d))
+* Allow specifying github token in config file ([39aae3a](https://github.com/prantlf/vp/commit/39aae3a8e2eec5e07098b67fcd4f51e56e692161))
+
 ## [0.2.2](https://github.com/prantlf/vp/compare/v0.2.1...v0.2.2) (2023-10-23)
 
 ### Bug Fixes
