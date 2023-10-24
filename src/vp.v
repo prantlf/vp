@@ -53,20 +53,22 @@ Examples:
   $ vp publish -v'
 
 struct Opts {
-	force      bool
-	changes    bool = true
-	bump       bool = true
-	commit     ?bool
-	tag        ?bool
-	push       bool = true
-	release    bool = true
-	archives   bool = true
-	failure    bool = true
-	assets     []string
-	bump_files []string [json: 'bump-files'; split]
-	yes        bool
-	dry_run    bool     [json: 'dry-run']
-	verbose    bool
+	force           bool
+	changes         bool = true
+	bump            bool = true
+	commit          ?bool
+	tag             ?bool
+	push            bool = true
+	release         bool = true
+	archives        bool = true
+	failure         bool = true
+	assets          []string
+	bump_files      []string [json: 'bump-files'; split]
+	yes             bool
+	dry_run         bool     [json: 'dry-run']
+	verbose         bool
+	version_detect  string   [json: 'version-detect']  = r'version'
+	version_replace string   [json: 'version-replace'] = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
 }
 
 fn main() {

@@ -3,14 +3,12 @@ import semver { Increment }
 import strings { new_builder }
 import prantlf.debug { rwd }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
-import prantlf.pcre { NoMatch, NoReplace, pcre_compile }
+import prantlf.pcre { NoMatch, NoReplace, RegEx, pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
 
 const (
-	re_vertxt  = pcre_compile('version', pcre.opt_caseless)!
 	re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))',
 		0)!
-	re_vernum  = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', 0)!
 )
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
@@ -56,11 +54,17 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 		ver = get_version(version, vmod_file)!
 	}
 
+	mut re_vertxt := unsafe { &RegEx(nil) }
+	mut re_vernum := unsafe { &RegEx(nil) }
+	if opts.bump || opts.bump_files.len > 0 {
+		re_vertxt = pcre_compile(opts.version_detect, pcre.opt_caseless)!
+		re_vernum = pcre_compile(opts.version_replace, 0)!
+	}
 	if opts.bump {
-		update_version(vmod_file, ver, opts.failure, true, opts.dry_run, opts.verbose)!
+		update_version(vmod_file, re_vertxt, re_vernum, ver, true, opts)!
 	}
 	for bump_file in opts.bump_files {
-		update_version(bump_file, ver, opts.failure, true, opts.dry_run, opts.verbose)!
+		update_version(bump_file, re_vertxt, re_vernum, ver, true, opts)!
 	}
 
 	do_commit(ver, commit, tag, opts)!
@@ -152,7 +156,7 @@ fn get_increment(version string) ?Increment {
 	}
 }
 
-fn update_version(file string, ver string, failure bool, required bool, dry bool, verbose bool) ! {
+fn update_version(file string, re_vertxt &RegEx, re_vernum &RegEx, ver string, required bool, opts &Opts) ! {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	contents := read_file(file)!
@@ -186,7 +190,7 @@ fn update_version(file string, ver string, failure bool, required bool, dry bool
 			rfile := rwd(file)
 			if found {
 				msg := 'version ${ver} already exists in "${rfile}"'
-				if failure {
+				if opts.failure {
 					return error(msg)
 				}
 				println(msg)
@@ -198,8 +202,8 @@ fn update_version(file string, ver string, failure bool, required bool, dry bool
 		return
 	}
 
-	if verbose {
-		mode := if dry {
+	if opts.verbose {
+		mode := if opts.dry_run {
 			' (dry-run)'
 		} else {
 			''
@@ -207,7 +211,7 @@ fn update_version(file string, ver string, failure bool, required bool, dry bool
 		println('updated version in "${rwd(file)}"${mode}')
 	}
 
-	if !dry {
+	if !opts.dry_run {
 		d.log('writing file "%s"', dfile)
 		mut f := create(file)!
 		defer {
