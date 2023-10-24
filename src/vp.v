@@ -7,6 +7,7 @@ const usage = 'Helps with development, installation and maintenance of VPM packa
 Usage: vp [options] <command> [parameters]
 
 Commands:
+  init          generate a config file with defaults
   link          link the current module to the global ~./vmodules directory
   unlink        remove the current module link from the global ~./vmodules
   version       prepare the current module for publishing a new version
@@ -23,11 +24,12 @@ Options for link and unlink:
 
 Parameters for version and publish:
   [<version>]   version if the changelog update is disabled
-	              (also major, minor or patch for bumping the existing version)
+                (also major, minor or patch for bumping the existing version)
 
 Options for version, publish and release:
-	--no-changes       do not update the changelog
-	--no-bump          do not bumpt the version in the package manifest
+  -c|--config <name> file name or path of the config file
+  --no-changes       do not update the changelog
+  --no-bump          do not bumpt the version in the package manifest
   --no-commit        do not commit the changes during publishing
   --no-tag           do not tag the commit during publishing
   --no-push          do not push the commit and tag during publishing
@@ -41,7 +43,7 @@ Options for version, publish and release:
   -v|--verbose       print the new changes on the console too
 
 Common options:
-	-c|--config <name>  file name of path of the config file
+  -c|--config <name>  file name of path of the config file
   -V|--version        print the version of the executable and exits
   -h|--help           print the usage information and exits
 
@@ -72,6 +74,9 @@ fn main() {
 		usage: usage
 		version: version
 		options_anywhere: true
+		cfg_opt: 'c'
+		cfg_gen_arg: 'init'
+		cfg_file: '.vp'
 		env: Env.both
 	}, body)
 }
