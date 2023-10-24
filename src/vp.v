@@ -1,6 +1,6 @@
 import prantlf.cli { Cli, Env, run }
 
-const version = '0.0.1'
+const version = '0.2.2'
 
 const usage = 'Helps with development, installation and maintenance of VPM packages.
 
@@ -35,6 +35,7 @@ Options for version, publish and release:
   --no-archives      do not upload platform archives automatically as assets
   --no-failure       do not fail in case of no version change or release
   -a|--assets <file> files to upload as extra assets to the github release
+  -b|--bump-files <file> extra files in which to bump the version
   -y|--yes           answer the push and reelase confirmations with "yes"
   -d|--dry-run       only print what would be done without doing it
   -v|--verbose       print the new changes on the console too
@@ -50,19 +51,20 @@ Examples:
   $ vp publish -v'
 
 struct Opts {
-	force    bool
-	changes  bool = true
-	bump     bool = true
-	commit   ?bool
-	tag      ?bool
-	push     bool = true
-	release  bool = true
-	archives bool = true
-	failure  bool = true
-	assets   []string
-	yes      bool
-	dry_run  bool
-	verbose  bool
+	force      bool
+	changes    bool = true
+	bump       bool = true
+	commit     ?bool
+	tag        ?bool
+	push       bool = true
+	release    bool = true
+	archives   bool = true
+	failure    bool = true
+	assets     []string
+	bump_files []string [json: 'bump-files'; split]
+	yes        bool
+	dry_run    bool     [json: 'dry-run']
+	verbose    bool
 }
 
 fn main() {
@@ -98,21 +100,17 @@ fn body(mut opts Opts, args []string) ! {
 		'version' {
 			commit := opts.commit or { true }
 			tag := opts.tag or { true }
-			create_version(first_arg, opts.changes, opts.bump, commit, tag, opts.failure,
-				opts.dry_run, opts.verbose)!
+			create_version(first_arg, commit, tag, &opts)!
 		}
 		'publish' {
 			commit := opts.commit or { false }
 			tag := opts.tag or { false }
-			publish(opts.assets, commit, tag, opts.push, opts.release, opts.archives,
-				opts.failure, opts.yes, opts.dry_run, opts.verbose)!
+			publish(commit, tag, &opts)!
 		}
 		'release' {
 			commit := opts.commit or { true }
 			tag := opts.tag or { true }
-			version_and_publish(first_arg, opts.assets, opts.changes, opts.bump, commit,
-				tag, opts.push, opts.release, opts.archives, opts.failure, opts.yes, opts.dry_run,
-				opts.verbose)!
+			version_and_publish(first_arg, commit, tag, &opts)!
 		}
 		else {
 			return error('Command "${command}" is invalid.')

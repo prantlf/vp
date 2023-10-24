@@ -13,35 +13,35 @@ const (
 	re_vernum  = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', 0)!
 )
 
-fn create_version(version string, changes bool, bump bool, commit bool, tag bool, failure bool, dry bool, verbose bool) !(string, string) {
-	vmod_file := if !changes || bump {
+fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
+	vmod_file := if !opts.changes || opts.bump {
 		_, file := find_manifest()!
 		file
 	} else {
 		''
 	}
 
-	mode := if dry {
+	mode := if opts.dry_run {
 		'd'
 	} else {
 		''
 	}
 	mut ver := ''
 	mut log := ''
-	if changes {
+	if opts.changes {
 		out := execute_opt('newchanges -Nuv${mode}', ExecuteOpts{
 			trim_trailing_whitespace: true
 		})!
 		log = until_last_nth_line_not_empty(out, 2)
 		line := last_line_not_empty(out)
-		if verbose {
+		if opts.verbose {
 			println(out)
 		} else {
 			println(line)
 		}
 		if line.starts_with('no ') {
 			msg := 'version not upgraded'
-			if failure {
+			if opts.failure {
 				return error(msg)
 			}
 			println(msg)
@@ -56,17 +56,20 @@ fn create_version(version string, changes bool, bump bool, commit bool, tag bool
 		ver = get_version(version, vmod_file)!
 	}
 
-	if bump {
-		update_version(vmod_file, ver, failure, true, dry)!
+	if opts.bump {
+		update_version(vmod_file, ver, opts.failure, true, opts.dry_run, opts.verbose)!
+	}
+	for bump_file in opts.bump_files {
+		update_version(bump_file, ver, opts.failure, true, opts.dry_run, opts.verbose)!
 	}
 
-	do_commit(ver, commit, tag, failure, dry)!
+	do_commit(ver, commit, tag, opts)!
 
 	return ver, log
 }
 
-fn do_commit(ver string, commit bool, tag bool, failure bool, dry bool) ! {
-	mode := if dry {
+fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
+	mode := if opts.dry_run {
 		' (dry-run)'
 	} else {
 		''
@@ -80,7 +83,7 @@ fn do_commit(ver string, commit bool, tag bool, failure bool, dry bool) ! {
 			d.log_str(out)
 			if out.len > 0 {
 				msg := 'tag v${ver} already exists'
-				if failure {
+				if opts.failure {
 					return error(msg)
 				}
 				println(msg)
@@ -88,7 +91,7 @@ fn do_commit(ver string, commit bool, tag bool, failure bool, dry bool) ! {
 			}
 		}
 
-		if dry {
+		if opts.dry_run {
 			println('prepared version ${ver} for committing${mode}')
 			return
 		}
@@ -110,25 +113,25 @@ fn do_commit(ver string, commit bool, tag bool, failure bool, dry bool) ! {
 	}
 }
 
-fn get_version(version string, vmod_name string) !string {
-	if version.len == 0 {
+fn get_version(new_ver string, vmod_name string) !string {
+	if new_ver.len == 0 {
 		return error('updating the changelog was disabled, specify the new version on the command line')
 	}
 
-	return if increment := get_increment(version) {
+	return if increment := get_increment(new_ver) {
 		manifest := read_manifest(vmod_name)!
 		if manifest.version.len == 0 {
 			return error('package manifest contains no version')
 		}
-		ver := semver.from(manifest.version)!
-		ver.increment(increment).str()
+		orig_ver := semver.from(manifest.version)!
+		orig_ver.increment(increment).str()
 	} else {
-		semver.from(version)!
+		semver.from(new_ver)!
 		manifest := read_manifest(vmod_name)!
-		if manifest.version == version {
-			return error('${version} is the current version')
+		if manifest.version == new_ver {
+			return error('${new_ver} is the current version')
 		}
-		version
+		new_ver
 	}
 }
 
@@ -149,7 +152,7 @@ fn get_increment(version string) ?Increment {
 	}
 }
 
-fn update_version(file string, ver string, failure bool, required bool, dry bool) ! {
+fn update_version(file string, ver string, failure bool, required bool, dry bool, verbose bool) ! {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	contents := read_file(file)!
@@ -193,6 +196,15 @@ fn update_version(file string, ver string, failure bool, required bool, dry bool
 		}
 		d.log_str('skipping a file without a version number detected')
 		return
+	}
+
+	if verbose {
+		mode := if dry {
+			' (dry-run)'
+		} else {
+			''
+		}
+		println('updated version in "${rwd(file)}"${mode}')
 	}
 
 	if !dry {

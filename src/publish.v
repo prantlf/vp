@@ -7,18 +7,18 @@ import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
 
-fn publish(assets []string, commit bool, tag bool, push bool, release bool, upload bool, failure bool, yes bool, dry bool, verbose bool) ! {
-	ver, log := if release {
-		get_last_version(failure, verbose)!
+fn publish(commit bool, tag bool, opts &Opts) ! {
+	ver, log := if opts.release {
+		get_last_version(opts.failure, opts.verbose)!
 	} else {
 		_, _, manifest := get_manifest()!
 		manifest.version, ''
 	}
 	if ver.len > 0 {
 		if commit {
-			do_commit(ver, commit, tag, failure, dry)!
+			do_commit(ver, commit, tag, opts)!
 		}
-		do_publish(ver, assets, log, push, release, upload, failure, yes, dry, verbose)!
+		do_publish(ver, log, opts)!
 	}
 }
 
@@ -50,13 +50,13 @@ fn get_last_version(failure bool, verbose bool) !(string, string) {
 	return ver, log
 }
 
-fn do_publish(ver string, assets []string, log string, push bool, release bool, upload bool, failure bool, yes bool, dry bool, verbose bool) ! {
-	repo_path, gh_token := if release {
+fn do_publish(ver string, log string, opts &Opts) ! {
+	repo_path, gh_token := if opts.release {
 		path := get_repo_path()!
 		token := get_gh_token()!
 		if was_released(path, ver, token)! {
 			msg := 'version ${ver} has been already released'
-			if failure {
+			if opts.failure {
 				return error(msg)
 			}
 			println(msg)
@@ -67,14 +67,14 @@ fn do_publish(ver string, assets []string, log string, push bool, release bool, 
 		'', ''
 	}
 
-	mode := if dry {
+	mode := if opts.dry_run {
 		' (dry-run)'
 	} else {
 		''
 	}
 
-	if push && (yes || confirm('push version ${ver}${mode}')!) {
-		if !dry {
+	if opts.push && (opts.yes || confirm('push version ${ver}${mode}')!) {
+		if !opts.dry_run {
 			out := execute('git push --atomic origin HEAD "v${ver}"')!
 			d.log_str(out)
 			eprintln('')
@@ -82,18 +82,18 @@ fn do_publish(ver string, assets []string, log string, push bool, release bool, 
 		println('pushed version ${ver}${mode}')
 	}
 
-	if release {
-		archives := collect_assets(assets, upload)!
+	if opts.release {
+		archives := collect_assets(opts.assets, opts.archives)!
 		mut suffix := if archives.len > 0 {
 			' with ${archives.join(', ')}'
 		} else {
 			''
 		}
-		if yes || confirm('release version ${ver}${suffix}${mode}')! {
-			if !dry {
+		if opts.yes || confirm('release version ${ver}${suffix}${mode}')! {
+			if !opts.dry_run {
 				post_release(repo_path, ver, log, archives, gh_token)!
 			}
-			if !yes {
+			if !opts.yes {
 				suffix = ''
 			}
 			println('released version ${ver}${suffix}${mode}')

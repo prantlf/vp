@@ -1,10 +1,11 @@
 module main
 
-import v.vmod
+import os { getwd }
 
 fn test_get_manifest() {
+	cwd := getwd()
 	dir, name, manifest := get_manifest()!
-	assert dir == '.'
-	assert name == 'v.mod'
-	assert manifest is vmod.Manifest
+	assert dir == cwd
+	assert name == '${cwd}${os.path_separator}v.mod'
+	assert manifest.name == 'vp'
 }
