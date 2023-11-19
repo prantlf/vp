@@ -1,4 +1,4 @@
-import os
+import os { last_error }
 import prantlf.debug { rwd }
 
 #flag -I @VROOT/src
@@ -11,7 +11,7 @@ fn C.CreateFileW(&u16, u32, u32, voidptr, u32, u32, voidptr) voidptr
 fn C.CloseHandle(voidptr) C.BOOL
 fn C.DeviceIoControl(voidptr, int, voidptr, int, voidptr, int, &int, voidptr) C.BOOL
 
-[typedef]
+@[typedef]
 struct C.VP_REPARSE_DATA_BUFFER {
 	ReparseTag        u32
 	ReparseDataLength u16
@@ -45,7 +45,7 @@ fn resolve_link(path string) !string {
 		0, C.OPEN_EXISTING, C.FILE_FLAG_BACKUP_SEMANTICS | C.FILE_FLAG_OPEN_REPARSE_POINT,
 		0)
 	if fh == C.INVALID_HANDLE_VALUE {
-		return error('opening link "${rwd(path)}" failed: ${os.last_error()}')
+		return error('opening link "${rwd(path)}" failed: ${last_error()}')
 	}
 	defer {
 		C.CloseHandle(fh)
@@ -54,7 +54,7 @@ fn resolve_link(path string) !string {
 	mut size := 0
 	if C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size,
 		0) != C.TRUE {
-		return error('enquiring link "${rwd(path)}" failed: ${os.last_error()}')
+		return error('enquiring link "${rwd(path)}" failed: ${last_error()}')
 	}
 	data := unsafe { &C.VP_REPARSE_DATA_BUFFER(buf.data) }
 	if data.ReparseTag != C.IO_REPARSE_TAG_SYMLINK {

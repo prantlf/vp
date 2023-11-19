@@ -1,12 +1,12 @@
-import os
+import os { exists, is_dir, is_link, rm }
 import prantlf.debug { rwd }
 
 fn unlink(link_path string, module_dir string, force bool) ! {
 	dlink_path := d.rwd(link_path)
 	d.log('checking existence of "%s"', dlink_path)
-	if os.exists(link_path) {
+	if exists(link_path) {
 		d.log('checking if "%s" is a link', dlink_path)
-		if os.is_link(link_path) {
+		if is_link(link_path) {
 			target_path := resolve_link(link_path)!
 			if module_dir != target_path {
 				if force {
@@ -20,10 +20,10 @@ fn unlink(link_path string, module_dir string, force bool) ! {
 			}
 
 			println('removing the link "${rwd(link_path)}"')
-			os.rm(link_path)!
+			rm(link_path)!
 		} else {
 			d.log('checking if "%s" is a directory', dlink_path)
-			if os.is_dir(link_path) {
+			if is_dir(link_path) {
 				return error('the path "${rwd(link_path)}" does not belong to a directory')
 			} else {
 				return error('the path "${rwd(link_path)}" does not belong to a link')

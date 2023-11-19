@@ -1,5 +1,5 @@
-import os
-import v.vmod
+import os { exists, getwd, join_path_single, read_lines, real_path, vmodules_dir }
+import v.vmod { Manifest, from_file }
 import prantlf.debug { new_debug }
 import prantlf.pcre { NoMatch, pcre_compile }
 
@@ -7,8 +7,8 @@ const d = new_debug('vp')
 
 const hint = ' - if you want to continue, specify the package name and force the operation'
 
-fn get_link(args []string, forced_name string, force bool) !(string, string) {
-	scope, name, module_dir := analyse_module(force)!
+fn get_link(forced_name string, force bool) !(string, string) {
+	scope, name, module_dir, _ := analyse_module(force)!
 	mut full_name := if name.len > 0 {
 		if scope == 'vlang' {
 			name
@@ -35,7 +35,7 @@ fn get_link(args []string, forced_name string, force bool) !(string, string) {
 		return error('the package name cannot be inferred fron the git configuration - if you want to continue, enter one explicitly and force the operation')
 	}
 
-	link_path := os.join_path_single(os.vmodules_dir(), full_name.replace('.', os.path_separator))
+	link_path := join_path_single(vmodules_dir(), full_name.replace('.', os.path_separator))
 	dlink_path := d.rwd(link_path)
 	dmodule_dir := d.rwd(module_dir)
 	d.log('link "%s" computed for the directory "%s"', dlink_path, dmodule_dir)
@@ -46,25 +46,25 @@ fn find_manifest() !(string, string) {
 	return find_file('v.mod')!
 }
 
-fn get_manifest() !(string, string, vmod.Manifest) {
+fn get_manifest() !(string, string, Manifest) {
 	vmod_dir, vmod_name := find_manifest()!
 	manifest := read_manifest(vmod_name)!
 	return vmod_dir, vmod_name, manifest
 }
 
-fn read_manifest(vmod_file string) !vmod.Manifest {
+fn read_manifest(vmod_file string) !Manifest {
 	dvmod_file := d.rwd(vmod_file)
 	d.log('reading manifest "%s"', dvmod_file)
-	return vmod.from_file(vmod_file)!
+	return from_file(vmod_file)!
 }
 
-fn analyse_module(force bool) !(string, string, string) {
+fn analyse_module(force bool) !(string, string, string, Manifest) {
 	vmod_dir, _, manifest := get_manifest()!
 
 	_, git_path := find_file('.git') or {
 		if force {
 			d.log_str('missing ".git" directory')
-			return '', '', vmod_dir
+			return '', '', vmod_dir, manifest
 		} else {
 			return error('missing ".git"${hint}')
 		}
@@ -86,7 +86,7 @@ fn analyse_module(force bool) !(string, string, string) {
 		if err is NoMatch {
 			if force {
 				d.log_str('unsupported git repository url')
-				return '', '', vmod_dir
+				return '', '', vmod_dir, manifest
 			}
 			return error('unsupported git url "${url}"${hint}')
 		}
@@ -109,14 +109,14 @@ fn analyse_module(force bool) !(string, string, string) {
 	}
 	dvmod_dir := d.rwd(vmod_dir)
 	d.log('module "%s.%s" found in "%s"', scope, manifest.name, dvmod_dir)
-	return scope, manifest.name, vmod_dir
+	return scope, manifest.name, vmod_dir, manifest
 }
 
 fn get_repo_url(path string) !(string, bool) {
-	file := os.join_path_single(path, 'config')
+	file := join_path_single(path, 'config')
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
-	lines := os.read_lines(file)!
+	lines := read_lines(file)!
 
 	mut re_url := pcre_compile(r'\s*url\s*=\s*(.+)$', 0) or { panic(err) }
 	for line in lines {
@@ -133,19 +133,19 @@ fn get_repo_url(path string) !(string, bool) {
 }
 
 fn find_file(name string) !(string, string) {
-	mut dir := os.getwd()
+	mut dir := getwd()
 	for i := 0; i < 10; i++ {
-		mut file := os.join_path_single(dir, name)
+		mut file := join_path_single(dir, name)
 		mut ddir := d.rwd(dir)
 		d.log('checking if "%s" exists in "%s"', name, ddir)
-		if os.exists(file) {
-			dir = os.real_path(dir)
+		if exists(file) {
+			dir = real_path(dir)
 			ddir = d.rwd(dir)
 			d.log('"%s" found in "%s"', name, ddir)
-			file = os.join_path_single(dir, name)
+			file = join_path_single(dir, name)
 			return dir, file
 		}
-		dir = os.join_path_single(dir, '..')
+		dir = join_path_single(dir, '..')
 	}
 	return error('"${name}" not found')
 }

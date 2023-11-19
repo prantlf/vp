@@ -155,7 +155,8 @@ fn collect_assets(assets []string, upload bool) ![]string {
 		d.log_str('listing files in the current directory')
 		prefix := '${manifest.name}-'
 		files := ls('.')!
-		filtered := files.filter(it.ends_with('-x64.zip') && it.starts_with(prefix))
+		filtered := files.filter((it.ends_with('-arm64.zip') || it.ends_with('-x64.zip'))
+			&& it.starts_with(prefix))
 		d.log('filtered %d archives from %d files', filtered.len, files.len)
 		filtered
 	} else {
