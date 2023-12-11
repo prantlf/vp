@@ -6,17 +6,14 @@ import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, NoReplace, RegEx, pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
 
-const (
-	re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))',
-		0)!
-)
+const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))',
+	0)!
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
-	vmod_file := if !opts.changes || opts.bump {
-		_, file := find_manifest()!
-		file
+	vmod_dir, vmod_file := if !opts.changes || opts.bump {
+		find_manifest()!
 	} else {
-		''
+		'', ''
 	}
 
 	mode := if opts.dry_run {
@@ -62,6 +59,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 	}
 	if opts.bump {
 		update_version(vmod_file, re_vertxt, re_vernum, ver, true, opts)!
+		set_package_version(ver, vmod_dir, opts)!
 	}
 	for bump_file in opts.bump_files {
 		update_version(bump_file, re_vertxt, re_vernum, ver, true, opts)!

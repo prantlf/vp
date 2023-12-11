@@ -3,15 +3,13 @@ module main
 import semver { Increment }
 import prantlf.pcre { pcre_compile }
 
-const (
-	test_opts = Opts{
-		dry_run: true
-	}
-	test_re_vertxt = pcre_compile('version', pcre.opt_caseless) or { panic('re_vertxt') }
-	test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', 0) or {
-		panic('re_vernum')
-	}
-)
+const test_opts = Opts{
+	dry_run: true
+}
+const test_re_vertxt = pcre_compile('version', pcre.opt_caseless) or { panic('re_vertxt') }
+const test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', 0) or {
+	panic('re_vernum')
+}
 
 fn test_get_version_empty() {
 	get_version('', 'v.mod') or {
