@@ -8,6 +8,7 @@ Usage: vp [options] <command> [parameters]
 
 Commands:
   init          generate a config file with defaults
+  ls|list       list modules installed in ~/.vmodules or ./modules
   link          link the current module to the global ~./vmodules directory
   unlink        remove the current module link from the global ~./vmodules
   version       prepare the current module for publishing a new version
@@ -15,6 +16,10 @@ Commands:
   publish       publish a new version prepared earlier by `vp version`
                 (push the change and tag, create a github release)
   release       perform both `vp version` and `vp publish`
+
+Parameters for list:
+  -g|--global   inspect contents of ~./vmodules (default is ./[src/]modules)
+  [<pkg names>] names of the package to print its version
 
 Parameters for link and unlink:
   [<pkg name>]  name of the package if guessing is not reliable
@@ -53,6 +58,7 @@ Examples:
   $ vp publish -v'
 
 struct Opts {
+	global          bool
 	force           bool
 	changes         bool = true
 	bump            bool = true
@@ -63,13 +69,13 @@ struct Opts {
 	archives        bool = true
 	failure         bool = true
 	assets          []string
-	bump_files      []string [json: 'bump-files'; split]
+	bump_files      []string @[json: 'bump-files'; split]
 	yes             bool
-	dry_run         bool     [json: 'dry-run']
+	dry_run         bool     @[json: 'dry-run']
 	verbose         bool
-	version_detect  string   [json: 'version-detect']  = r'version'
-	version_replace string   [json: 'version-replace'] = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
-	gh_token        string   [json: 'gh-token']
+	version_detect  string  = r'version'   @[json: 'version-detect']
+	version_replace string = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'   @[json: 'version-replace']
+	gh_token        string   @[json: 'gh-token']
 }
 
 fn main() {
@@ -95,14 +101,26 @@ fn body(mut opts Opts, args []string) ! {
 	} else {
 		''
 	}
+	rest_args := if args.len > 1 {
+		args[1..]
+	} else {
+		[]string{}
+	}
 
 	match command {
+		'ls', 'list' {
+			if opts.global {
+				list_global(rest_args)!
+			} else {
+				list(rest_args)!
+			}
+		}
 		'link' {
-			link_path, module_dir := get_link(args, first_arg, opts.force)!
+			link_path, module_dir := get_link(first_arg, opts.force)!
 			link(link_path, module_dir, opts.force)!
 		}
 		'unlink' {
-			link_path, module_dir := get_link(args, first_arg, opts.force)!
+			link_path, module_dir := get_link(first_arg, opts.force)!
 			unlink(link_path, module_dir, opts.force)!
 		}
 		'version' {
