@@ -85,7 +85,7 @@ fn list_modules(scope string, mdir string, names []string, mut listed []Module) 
 
 	for dir in dirs {
 		sdir := join_path_single(mdir, dir)
-		if is_dir(sdir) && is_module(dir) && (names.len == 0 || scopes_or_names.contains(dir)) {
+		if is_module(dir) && (names.len == 0 || scopes_or_names.contains(dir)) {
 			collect_module(scope, dir, sdir, names, mut listed)!
 		} else {
 			d.log('ignore "%s"', dir)
@@ -158,7 +158,7 @@ fn get_global_mdir() string {
 }
 
 fn is_module(dir string) bool {
-	return !(dir.starts_with('.') || dir == 'cache')
+	return is_dir(dir) && !(dir.starts_with('.') || dir == 'cache' || dir == 'vlib')
 }
 
 fn get_module(listed []Module, name string) ?Module {
