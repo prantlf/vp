@@ -1,5 +1,11 @@
 # Changes
 
+## [0.5.1](https://github.com/prantlf/vp/compare/v0.5.0...v0.5.1) (2023-12-12)
+
+### Bug Fixes
+
+* Fix listing dependencies ([abe590c](https://github.com/prantlf/vp/commit/abe590c6abfbcf84aaa2ad6075be680d45af53e4))
+
 ## [0.5.0](https://github.com/prantlf/vp/compare/v0.4.0...v0.5.0) (2023-12-12)
 
 ### Features
