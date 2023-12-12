@@ -64,17 +64,17 @@ jobs:
       uses: prantlf/shelve-output-action@v2
       with:
         arch: arm64
-    - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@master
-    - name: Install MinGW64
-      run: brew install mingw-w64
-    - name: Build Windows
-      run: make build RELEASE=1 WINDOWS=1
-    - name: Shelve output
-      if: ${{ needs.linux.outputs.changed == 'true' }}
-      uses: prantlf/shelve-output-action@v2
-      with:
-        os: windows
+    # - name: Set up Homebrew
+    #   uses: Homebrew/actions/setup-homebrew@master
+    # - name: Install MinGW64
+    #   run: brew install mingw-w64
+    # - name: Build Windows
+    #   run: make build RELEASE=1 WINDOWS=1
+    # - name: Shelve output
+    #   if: ${{ needs.linux.outputs.changed == 'true' }}
+    #   uses: prantlf/shelve-output-action@v2
+    #   with:
+    #     os: windows
 
   # windows:
   #   needs:
@@ -157,6 +157,8 @@ jobs:
         files: ${{ needs.linux.outputs.changed-files }}
     - name: Unshelve output
       uses: prantlf/unshelve-output-action@v4
+      with:
+        include-windows: false
     - name: Publish release
       uses: prantlf/finish-release-action@v1
       env:
