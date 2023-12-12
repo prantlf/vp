@@ -1,5 +1,11 @@
 # Changes
 
+## [0.5.2](https://github.com/prantlf/vp/compare/v0.5.1...v0.5.2) (2023-12-12)
+
+### Bug Fixes
+
+* Do not check the version in package.json before publishing ([ac39753](https://github.com/prantlf/vp/commit/ac3975300c103f310d5604ee27e466c7cde01a28))
+
 ## [0.5.1](https://github.com/prantlf/vp/compare/v0.5.0...v0.5.1) (2023-12-12)
 
 ### Bug Fixes
