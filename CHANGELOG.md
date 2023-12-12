@@ -1,5 +1,11 @@
 # Changes
 
+## [0.5.0](https://github.com/prantlf/vp/compare/v0.4.0...v0.5.0) (2023-12-12)
+
+### Features
+
+* Publish by npm if package.json is found ([00150e1](https://github.com/prantlf/vp/commit/00150e16af8adcc96bb6674105743efe3563cdb6))
+
 ## [0.4.0](https://github.com/prantlf/vp/compare/v0.3.0...v0.4.0) (2023-12-12)
 
 ### Features
