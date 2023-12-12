@@ -51,19 +51,7 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 }
 
 fn publish_package(ver string, opts &Opts) ! {
-	_, pkg_file := find_package() or { return }
-	pkg := read_json(pkg_file)!
-	pkg_ver := pkg.object()!['version'] or {
-		return error('no version in package.json has been found')
-	}
-	if pkg_ver.string()! == ver {
-		msg := 'version ${ver} has been already published'
-		if opts.failure {
-			return error(msg)
-		}
-		println(msg)
-		return
-	}
+	_, _ := find_package() or { return }
 
 	mode := if opts.dry_run {
 		' (dry-run)'
@@ -71,7 +59,7 @@ fn publish_package(ver string, opts &Opts) ! {
 		''
 	}
 
-	if opts.push && (opts.yes || confirm('publish version ${ver}${mode}')!) {
+	if opts.yes || confirm('publish version ${ver}${mode}')! {
 		if !opts.dry_run {
 			extra_args := if opts.verbose { ' -v' } else { '' }
 			out := execute('npm publish --access public${extra_args}')!
