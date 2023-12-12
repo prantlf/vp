@@ -1,5 +1,19 @@
 # Changes
 
+## [0.4.0](https://github.com/prantlf/vp/compare/v0.3.0...v0.4.0) (2023-12-12)
+
+### Features
+
+* Bump version in package.json too, if it exists ([86d118e](https://github.com/prantlf/vp/commit/86d118e5edf312b100ab2148bc9d51f995ff37c0))
+* Implement dependent and global module listing ([0c2b1d7](https://github.com/prantlf/vp/commit/0c2b1d780048561363f075b33982dd4f77748182))
+* Build for Windows by cross-compiling ([f0b79d0](https://github.com/prantlf/vp/commit/f0b79d0576f1f9c17fc906e564232c2c884930da))
+* Build for Windows by cross-compiling on Mac ([8c41eb3](https://github.com/prantlf/vp/commit/8c41eb340117cb5a54493aeb3f47097d2625c721))
+* Disable Windows build ([9edce5b](https://github.com/prantlf/vp/commit/9edce5b317f798f1210c0739026aa3c0958bfcf2))
+
+### Bug Fixes
+
+* Declare BOOL on Windows properly ([bafa161](https://github.com/prantlf/vp/commit/bafa161e5262945fb7b3a2d0f9a954252d6fdcd7))
+
 ## [0.3.0](https://github.com/prantlf/vp/compare/v0.2.2...v0.3.0) (2023-10-24)
 
 ### Features
