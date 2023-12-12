@@ -51,6 +51,10 @@ fn get_last_version(failure bool, verbose bool) !(string, string) {
 }
 
 fn do_publish(ver string, log string, opts &Opts) ! {
+	if opts.node {
+		publish_package(ver, opts)!
+	}
+
 	repo_path, gh_token := if opts.release {
 		path := get_repo_path()!
 		token := get_gh_token(opts.gh_token)!

@@ -44,7 +44,8 @@ Helps with development, installation and maintenance of VPM packages.
     Options for version, publish and release:
       -c|--config <name> file name or path of the config file
       --no-changes       do not update the changelog
-      --no-bump          do not bumpt the version in the package manifest
+      --no-bump          do not bump the version in the package manifest
+      --no-node          do not version and publish using npm and package.json
       --no-commit        do not commit the changes during publishing
       --no-tag           do not tag the commit during publishing
       --no-push          do not push the commit and tag during publishing

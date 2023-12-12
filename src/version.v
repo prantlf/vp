@@ -59,7 +59,9 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 	}
 	if opts.bump {
 		update_version(vmod_file, re_vertxt, re_vernum, ver, true, opts)!
-		set_package_version(ver, vmod_dir, opts)!
+		if opts.node {
+			set_package_version(ver, vmod_dir, opts)!
+		}
 	}
 	for bump_file in opts.bump_files {
 		update_version(bump_file, re_vertxt, re_vernum, ver, true, opts)!
