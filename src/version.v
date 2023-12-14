@@ -1,4 +1,4 @@
-import os { create, read_file }
+import os { create, join_path_single, read_file }
 import semver { Increment }
 import strings { new_builder }
 import prantlf.debug { rwd }
@@ -10,10 +10,9 @@ const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0
 	0)!
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
-	vmod_dir, vmod_file := if !opts.changes || opts.bump {
-		find_manifest()!
-	} else {
-		'', ''
+	vlang, node, vmod_dir := find_manifest_or_package(opts)
+	if vmod_dir.len == 0 && (!opts.changes || opts.bump) {
+		return error('neither v.mod nor package.json was found')
 	}
 
 	mode := if opts.dry_run {
@@ -48,7 +47,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 			return error('unexpected output of newchanges: "${line}"')
 		}
 	} else {
-		ver = get_version(version, vmod_file)!
+		ver = get_next_version(version, vmod_dir)!
 	}
 
 	mut re_vertxt := unsafe { &RegEx(nil) }
@@ -58,8 +57,11 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 		re_vernum = pcre_compile(opts.version_replace, 0)!
 	}
 	if opts.bump {
-		update_version(vmod_file, re_vertxt, re_vernum, ver, true, opts)!
-		if opts.node {
+		if vlang {
+			vmod_file := join_path_single(vmod_dir, 'v.mod')
+			update_version(vmod_file, re_vertxt, re_vernum, ver, true, opts)!
+		}
+		if node {
 			set_package_version(ver, vmod_dir, opts)!
 		}
 	}
@@ -117,22 +119,21 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 	}
 }
 
-fn get_version(new_ver string, vmod_name string) !string {
+fn get_next_version(new_ver string, vmod_dir string) !string {
 	if new_ver.len == 0 {
 		return error('updating the changelog was disabled, specify the new version on the command line')
 	}
 
+	ver := get_current_version(vmod_dir)!
 	return if increment := get_increment(new_ver) {
-		manifest := read_manifest(vmod_name)!
-		if manifest.version.len == 0 {
+		if ver.len == 0 {
 			return error('package manifest contains no version')
 		}
-		orig_ver := semver.from(manifest.version)!
+		orig_ver := semver.from(ver)!
 		orig_ver.increment(increment).str()
 	} else {
 		semver.from(new_ver)!
-		manifest := read_manifest(vmod_name)!
-		if manifest.version == new_ver {
+		if ver == new_ver {
 			return error('${new_ver} is the current version')
 		}
 		new_ver

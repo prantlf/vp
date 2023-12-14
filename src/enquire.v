@@ -1,5 +1,5 @@
 import os { exists, getwd, join_path_single, read_lines, real_path, vmodules_dir }
-import v.vmod { Manifest, from_file }
+import v.vmod
 import prantlf.debug { new_debug }
 import prantlf.pcre { NoMatch, pcre_compile }
 
@@ -42,23 +42,7 @@ fn get_link(forced_name string, force bool) !(string, string) {
 	return link_path, module_dir
 }
 
-fn find_manifest() !(string, string) {
-	return find_file('v.mod')!
-}
-
-fn get_manifest() !(string, string, Manifest) {
-	vmod_dir, vmod_name := find_manifest()!
-	manifest := read_manifest(vmod_name)!
-	return vmod_dir, vmod_name, manifest
-}
-
-fn read_manifest(vmod_file string) !Manifest {
-	dvmod_file := d.rwd(vmod_file)
-	d.log('reading manifest "%s"', dvmod_file)
-	return from_file(vmod_file)!
-}
-
-fn analyse_module(force bool) !(string, string, string, Manifest) {
+fn analyse_module(force bool) !(string, string, string, vmod.Manifest) {
 	vmod_dir, _, manifest := get_manifest()!
 
 	_, git_path := find_file('.git') or {
@@ -152,4 +136,55 @@ fn find_file(name string) !(string, string) {
 
 fn unreachable() IError {
 	panic('unreachable code')
+}
+
+fn find_manifest_or_package(opts &Opts) (bool, bool, string) {
+	vdir := if opts.vlang {
+		v, _ := find_manifest() or { '', '' }
+		v
+	} else {
+		''
+	}
+	ndir := if opts.node {
+		if vdir.len != 0 {
+			pkg_file := join_path_single(vdir, 'package.json')
+			if exists(pkg_file) {
+				vdir
+			} else {
+				''
+			}
+		} else {
+			n, _ := find_package() or { '', '' }
+			n
+		}
+	} else {
+		''
+	}
+	return if vdir.len != 0 {
+		true, ndir.len != 0, vdir
+	} else if ndir.len != 0 {
+		false, true, ndir
+	} else {
+		false, false, ''
+	}
+}
+
+fn get_current_version(vmod_dir string) !string {
+	vmod_file := join_path_single(vmod_dir, 'v.mod')
+	return if exists(vmod_file) {
+		manifest := read_manifest(vmod_file)!
+		manifest.version
+	} else {
+		pkg_file := join_path_single(vmod_dir, 'package.json')
+		if exists(pkg_file) {
+			pkg := read_json(pkg_file)!
+			if ver := pkg.object()!['version'] {
+				ver.string()!
+			} else {
+				''
+			}
+		} else {
+			error('neither v.mod nor package.json was found')
+		}
+	}
 }

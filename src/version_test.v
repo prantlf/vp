@@ -11,39 +11,39 @@ const test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)',
 	panic('re_vernum')
 }
 
-fn test_get_version_empty() {
-	get_version('', 'v.mod') or {
+fn test_get_next_version_empty() {
+	get_next_version('', '.') or {
 		assert err.msg() == 'updating the changelog was disabled, specify the new version on the command line'
 		return
 	}
 	assert false
 }
 
-fn test_get_version_invalid() {
-	get_version('dummy', 'v.mod') or {
+fn test_get_next_version_invalid() {
+	get_next_version('dummy', '.') or {
 		assert err.msg() == 'Invalid version format for input "dummy"'
 		return
 	}
 	assert false
 }
 
-fn test_get_version_actual() {
-	assert get_version('1.0.0', 'v.mod')! == '1.0.0'
+fn test_get_next_version_actual() {
+	assert get_next_version('1.0.0', '.')! == '1.0.0'
 }
 
-fn test_get_version_patch() {
+fn test_get_next_version_patch() {
 	ver := semver.from(version)!.increment(Increment.patch).str()
-	assert get_version('patch', 'v.mod')! == ver
+	assert get_next_version('patch', '.')! == ver
 }
 
-fn test_get_version_minor() {
+fn test_get_next_version_minor() {
 	ver := semver.from(version)!.increment(Increment.minor).str()
-	assert get_version('minor', 'v.mod')! == ver
+	assert get_next_version('minor', '.')! == ver
 }
 
-fn test_get_version_major() {
+fn test_get_next_version_major() {
 	ver := semver.from(version)!.increment(Increment.major).str()
-	assert get_version('major', 'v.mod')! == ver
+	assert get_next_version('major', '.')! == ver
 }
 
 fn test_update_version_exists() {

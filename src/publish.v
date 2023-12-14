@@ -11,8 +11,11 @@ fn publish(commit bool, tag bool, opts &Opts) ! {
 	ver, log := if opts.release {
 		get_last_version(opts.failure, opts.verbose)!
 	} else {
-		_, _, manifest := get_manifest()!
-		manifest.version, ''
+		_, _, vmod_dir := find_manifest_or_package(opts)
+		if vmod_dir.len == 0 {
+			return error('neither v.mod nor package.json was found')
+		}
+		get_current_version(vmod_dir)!, ''
 	}
 	if ver.len > 0 {
 		if commit {
@@ -141,7 +144,7 @@ fn post_release(repo_path string, version string, log string, assets []string, t
 	req.add_custom_header('X-GitHub-Api-Version', '2022-11-28')!
 	res := req.do()!
 	if res.status_code != 201 {
-		panic(error('${res.status_code}: ${res.status_msg}'))
+		return error('${res.status_code}: ${res.status_msg}')
 	}
 	d.log('received "%s"', res.body)
 	params := parse(res.body, ParseOpts{})!.object()!
@@ -187,7 +190,7 @@ fn add_asset(repo_path string, id int, name string, token string) ! {
 	req.add_custom_header('X-GitHub-Api-Version', '2022-11-28')!
 	res := req.do()!
 	if res.status_code != 201 {
-		panic(error('${res.status_code}: ${res.status_msg}'))
+		return error('${res.status_code}: ${res.status_msg}')
 	}
 	d.log('received "%s"', res.body)
 }
