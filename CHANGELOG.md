@@ -1,5 +1,11 @@
 # Changes
 
+## [0.7.1](https://github.com/prantlf/vp/compare/v0.7.0...v0.7.1) (2023-12-14)
+
+### Bug Fixes
+
+* Fix adding the linux arm64 support ([5e656f0](https://github.com/prantlf/vp/commit/5e656f0fcba5a964452fabafe4bc52cd17a2a47b))
+
 ## [0.7.0](https://github.com/prantlf/vp/compare/v0.6.0...v0.7.0) (2023-12-14)
 
 ### Features
