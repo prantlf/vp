@@ -1,5 +1,11 @@
 # Changes
 
+## [0.8.0](https://github.com/prantlf/vp/compare/v0.7.2...v0.8.0) (2023-12-14)
+
+### Features
+
+* Allow specifying extra args for newchanges ([a4908e7](https://github.com/prantlf/vp/commit/a4908e73ab17fd7ea23c49b8732e7c8c2ee688b5))
+
 ## [0.7.2](https://github.com/prantlf/vp/compare/v0.7.1...v0.7.2) (2023-12-14)
 
 ### Bug Fixes
