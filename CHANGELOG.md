@@ -1,5 +1,11 @@
 # Changes
 
+## [0.6.0](https://github.com/prantlf/vp/compare/v0.5.2...v0.6.0) (2023-12-14)
+
+### Features
+
+* Allow publishing a pure Node.js package ([201d23f](https://github.com/prantlf/vp/commit/201d23f81d5efe4f2df9b43903adde2cfd240ed4))
+
 ## [0.5.2](https://github.com/prantlf/vp/compare/v0.5.1...v0.5.2) (2023-12-12)
 
 ### Bug Fixes
