@@ -43,6 +43,7 @@ Options for version, publish and release:
   --no-release       do not create a new github release
   --no-archives      do not upload platform archives automatically as assets
   --no-failure       do not fail in case of no version change or release
+  --nc-args <args>   extra arguments for newchanges, enclosed in quotes
   -a|--assets <file> files to upload as extra assets to the github release
   -b|--bump-files <file> extra files in which to bump the version
   -y|--yes           answer the push and reelase confirmations with "yes"
@@ -72,6 +73,7 @@ struct Opts {
 	release         bool = true
 	archives        bool = true
 	failure         bool = true
+	nc_args         string   @[json: 'nc-args']
 	assets          []string
 	bump_files      []string @[json: 'bump-files'; split]
 	yes             bool

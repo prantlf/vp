@@ -53,6 +53,7 @@ Helps with development, installation and maintenance of VPM packages.
       --no-release       do not create a new github release
       --no-archives      do not upload platform archives automatically as assets
       --no-failure       do not fail in case of no version change or release
+      --nc-args <args>   extra arguments for newchanges, enclosed in quotes
       -a|--assets <file> files to upload as extra assets to the github release
       -b|--bump-files <file> extra files in which to bump the version
       -y|--yes           answer the push and reelase confirmations with "yes"

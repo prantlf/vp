@@ -9,7 +9,7 @@ import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty 
 
 fn publish(commit bool, tag bool, opts &Opts) ! {
 	ver, log := if opts.release {
-		get_last_version(opts.failure, opts.verbose)!
+		get_last_version(opts)!
 	} else {
 		_, _, vmod_dir := find_manifest_or_package(opts)
 		if vmod_dir.len == 0 {
@@ -25,20 +25,20 @@ fn publish(commit bool, tag bool, opts &Opts) ! {
 	}
 }
 
-fn get_last_version(failure bool, verbose bool) !(string, string) {
-	out := execute_opt('newchanges -iv', ExecuteOpts{
+fn get_last_version(opts &Opts) !(string, string) {
+	out := execute_opt('newchanges -iv ${opts.nc_args}', ExecuteOpts{
 		trim_trailing_whitespace: true
 	})!
 	log := until_one_but_last_line_not_empty(out)
 	line := last_line_not_empty(out)
-	if verbose {
+	if opts.verbose {
 		println(out)
 	} else {
 		println(line)
 	}
 	if line.starts_with('no ') {
 		msg := 'version not found'
-		if failure {
+		if opts.failure {
 			return error(msg)
 		}
 		println(msg)

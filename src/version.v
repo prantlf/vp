@@ -23,7 +23,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 	mut ver := ''
 	mut log := ''
 	if opts.changes {
-		out := execute_opt('newchanges -Nuv${mode}', ExecuteOpts{
+		out := execute_opt('newchanges -Nuv${mode} ${opts.nc_args}', ExecuteOpts{
 			trim_trailing_whitespace: true
 		})!
 		log = until_last_nth_line_not_empty(out, 2)
