@@ -188,3 +188,24 @@ fn get_current_version(vmod_dir string) !string {
 		}
 	}
 }
+
+fn get_name(opts &Opts) !string {
+	vlang, _, vmod_dir := find_manifest_or_package(opts)
+	if vmod_dir.len == 0 {
+		return error('neither v.mod nor package.json was found')
+	}
+
+	return if vlang {
+		vmod_file := join_path_single(vmod_dir, 'v.mod')
+		manifest := read_manifest(vmod_file)!
+		manifest.name
+	} else {
+		pkg_file := join_path_single(vmod_dir, 'package.json')
+		pkg := read_json(pkg_file)!
+		if name := pkg.object()!['name'] {
+			name.string()!
+		} else {
+			''
+		}
+	}
+}

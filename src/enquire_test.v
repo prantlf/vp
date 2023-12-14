@@ -46,3 +46,15 @@ fn test_get_repo_url() {
 	assert url == 'git@github.com:prantlf/vp.git' || url == 'https://github.com/prantlf/vp'
 	assert found == true
 }
+
+fn test_get_name_manifest() {
+	name := get_name(Opts{})!
+	assert name == 'vp'
+}
+
+fn test_get_name_package() {
+	chdir('src')!
+	name := get_name(Opts{ vlang: false })!
+	chdir('..')!
+	assert name == 'dummy'
+}

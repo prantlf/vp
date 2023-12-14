@@ -90,7 +90,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 	}
 
 	if opts.release {
-		archives := collect_assets(opts.assets, opts.archives)!
+		archives := collect_assets(opts)!
 		mut suffix := if archives.len > 0 {
 			' with ${archives.join(', ')}'
 		} else {
@@ -156,20 +156,20 @@ fn post_release(repo_path string, version string, log string, assets []string, t
 	}
 }
 
-fn collect_assets(assets []string, upload bool) ![]string {
-	mut archives := if upload {
-		_, _, manifest := get_manifest()!
+fn collect_assets(opts &Opts) ![]string {
+	mut archives := if opts.archives {
+		name := get_name(opts)!
+		prefix := '${name}-'
 		d.log_str('listing files in the current directory')
-		prefix := '${manifest.name}-'
 		files := ls('.')!
 		filtered := files.filter((it.ends_with('-arm64.zip') || it.ends_with('-x64.zip'))
 			&& it.starts_with(prefix))
 		d.log('filtered %d archives from %d files', filtered.len, files.len)
 		filtered
 	} else {
-		[]string{cap: assets.len}
+		[]string{cap: opts.assets.len}
 	}
-	archives << assets
+	archives << opts.assets
 	return archives
 }
 
