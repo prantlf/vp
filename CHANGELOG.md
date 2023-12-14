@@ -1,5 +1,11 @@
 # Changes
 
+## [0.7.2](https://github.com/prantlf/vp/compare/v0.7.1...v0.7.2) (2023-12-14)
+
+### Bug Fixes
+
+* Collect assets for publishing in pure Node.js projects too ([4d2dd9f](https://github.com/prantlf/vp/commit/4d2dd9f94f3e8c2deda4e3d4b6c9f1bdc893b629))
+
 ## [0.7.1](https://github.com/prantlf/vp/compare/v0.7.0...v0.7.1) (2023-12-14)
 
 ### Bug Fixes
