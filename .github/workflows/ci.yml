@@ -33,9 +33,10 @@ jobs:
     - name: Build and Test
       run: make RELEASE=1
     - name: Shelve output
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
-        enable: ${{ steps.bump.outputs.bumped }}
+        extra: man
     - name: Install ARM Cross-Compiler
       run: |
         sudo apt-get update
@@ -43,10 +44,11 @@ jobs:
     - name: Build ARM
       run: make build RELEASE=1 LINUX_ARM=1
     - name: Shelve output
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
-        enable: ${{ steps.bump.outputs.bumped }}
         arch: arm64
+        extra: man
 
   macos:
     needs:
@@ -68,6 +70,8 @@ jobs:
     - name: Shelve output
       if: ${{ needs.linux.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v2
+      with:
+        extra: man
     - name: Build ARM
       run: make build RELEASE=1 MACOS_ARM=1
     - name: Shelve output
@@ -75,42 +79,32 @@ jobs:
       uses: prantlf/shelve-output-action@v2
       with:
         arch: arm64
-    # - name: Set up Homebrew
-    #   uses: Homebrew/actions/setup-homebrew@master
-    # - name: Install MinGW64
-    #   run: brew install mingw-w64
-    # - name: Build Windows
-    #   run: make build RELEASE=1 WINDOWS=1
-    # - name: Shelve output
-    #   if: ${{ needs.linux.outputs.changed == 'true' }}
-    #   uses: prantlf/shelve-output-action@v2
-    #   with:
-    #     os: windows
+        extra: man
 
-  # windows:
-  #   needs:
-  #     - linux
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout Sources
-  #     uses: actions/checkout@v4
-  #   - name: Setup V
-  #     uses: prantlf/setup-v-action@v2
-  #   - name: Unshelve changes
-  #     if: ${{ needs.linux.outputs.changed == 'true' }}
-  #     uses: prantlf/unshelve-changes-action@v1
-  #     with:
-  #       files: ${{ needs.linux.outputs.changed-files }}
-  #       discard-shelf: false
-  #   - name: Install Cross-Compiler
-  #     run: sudo apt-get install gcc-mingw-w64-x86-64
-  #   - name: Build Windows
-  #     run: make build RELEASE=1 WINDOWS=1
-  #   - name: Shelve output
-  #     if: ${{ needs.linux.outputs.changed == 'true' }}
-  #     uses: prantlf/shelve-output-action@v2
-  #     with:
-  #       os: windows
+  windows:
+    needs:
+      - linux
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v4
+    - name: Setup V
+      uses: prantlf/setup-v-action@v2
+    - name: Unshelve changes
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v1
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+        discard-shelf: false
+    - name: Install Cross-Compiler
+      run: sudo apt-get install gcc-mingw-w64-x86-64
+    - name: Build Windows
+      run: make build RELEASE=1 WINDOWS=1
+    - name: Shelve output
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/shelve-output-action@v2
+      with:
+        os: windows
 
   # windows:
   #   needs:
@@ -147,7 +141,7 @@ jobs:
   #       files: ${{ needs.linux.outputs.changed-files }}
   #       discard-shelf: false
   #   - name: Build
-  #     run: cmd /c make-exe.bat
+  #     run: cmd /c make.bat
   #   - name: Shelve output
   #     if: ${{ needs.linux.outputs.changed == 'true' }}
   #     uses: prantlf/shelve-output-action@v2

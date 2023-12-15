@@ -1,0 +1,192 @@
+.TH vp "1" "December 15, 2023" "" "vp manual"
+
+.SH NAME
+vp - helps with development, installation and maintenance of VPM packages
+
+.SH SYNOPSIS
+.B vp
+[-c|--config
+.I name
+] [-l|--log
+.I
+file
+] [-h|--heading
+.I
+level
+]
+.br
+[-t|--tag-prefix
+.I
+prefix
+] [-l|--logged-types
+.I
+types
+] [-f|--from
+.I
+hash
+]
+.br
+[-t|--to
+.I
+hash
+] [-u|--try-unshallow] [-p|--path
+.I
+path
+]
+.br
+[-r|--repo-url
+.I
+url
+] [-o|--override-version
+.I
+version
+]
+.br
+[-e|--write-changes
+.I
+file
+] [-w|--write-version
+.I
+file
+]
+.br
+[-a|--assume-patch] [-0|--bump-major-0] [-d|--dry-run]
+.br
+[-N|--no-failure] [-i|--print-last] [-q|--quiet] [-v|--verbose]
+.br
+[-V|--version] [-h|--help]
+.I command
+[
+.I parameters
+]
+.RE
+
+.SH DESCRIPTION
+vp helps with development, installation and maintenance of VPM packages.
+
+.SH COMMANDS
+.B
+.IP "init"
+generate a config file with defaults
+.B
+.IP "ls|list"
+list modules installed in ~/.vmodules or ./modules
+.B
+.IP "link"
+link the current module to the global ~./vmodules directory
+.B
+.IP "unlink"
+remove the current module link from the global ~./vmodules
+.B
+.IP "version"
+prepare the current module for publishing a new version
+(update changelog, bump version, commit and tag the change)
+.B
+.IP "publish"
+publish a new version prepared earlier by `vp version`
+(push the change and tag, create a github release)
+.B
+.IP "release"
+perform both `vp version` and `vp publish`
+
+.SH OPTIONS AND PARAMETERS FOR LIST
+.B
+.IP "-g|--global"
+inspect contents of ~./vmodules (default is ./[src/]modules)
+.B
+.IP "[pkg names]"
+names of the package to print its version
+
+.SH PARAMETERS FOR LINK AND UNLINK
+.B
+.IP "[pkg names]"
+name of the package if guessing is not reliable
+
+.SH PARAMETERS FOR VERSION AND PUBLISH
+.B
+.IP "[version]"
+version if the changelog update is disabled
+(also major, minor or patch for bumping the existing version)
+
+.SH OPTIONS FOR VERSION, PUBLISH AND RELEASE
+.B
+.IP "--no-changes"
+do not update the changelog
+.B
+.IP "--no-bump"
+do not bump the version in the package manifest
+.B
+.IP "--no-vlang"
+do not version and publish using v and v.mod
+.B
+.IP "--no-node"
+do not version and publish using npm and package.json
+.B
+.IP "--no-commit"
+do not commit the changes during publishing
+.B
+.IP "--no-tag"
+do not tag the commit during publishing
+.B
+.IP "--no-push"
+do not push the commit and tag during publishing
+.B
+.IP "--no-release"
+do not create a new github release
+.B
+.IP "--no-archives"
+do not upload platform archives automatically as assets
+.B
+.IP "--no-failure"
+do not fail in case of no version change or release
+.B
+.IP "--nc-args args"
+extra arguments for newchanges, enclosed in quotes
+.B
+.IP "-a|--assets file"
+files to upload as extra assets to the github release
+.B
+.IP "-b|--bump-files file"
+extra files in which to bump the version
+.B
+.IP "-y|--yes"
+answer the push and reelase confirmations with "yes"
+.B
+.IP "-d|--dry-run"
+only print what would be done without doing it
+.B
+.IP "-v|--verbose"
+print the new changes on the console too
+
+.SH COMMON OPTIONS
+.B
+.IP "-c|--config name"
+file name or path of the config file
+.B
+.IP "-V|--version"
+print the version of the executable and exit
+.B
+.IP "-h|--help"
+print the usage information and exit
+
+.RE
+
+.SH EXAMPLES
+.B
+.IP "vp link prantlf.cargs -f"
+Link the current directory to ~/.vmodules/prantlf/cargs and ignore if the repository is not prantlf/cargs.
+.B
+.IP "vp unlink"
+Remove the link to the current directory from ~/.vmodules.
+.B
+.IP "vp publish -v"
+Publish the changes committed to the local repository with verbose output oon the console.
+
+.SH BUGS
+vp's bug tracker is located at <https://github.com/prantlf/vp/issues>
+
+.SH DOCUMENTATION
+See the website for documentation <https://github.com/prantlf/vp#readme>
+
+.SH AUTHOR
+Currently maintained by Ferdinand Prantl <prantlf@gmail.com>

@@ -17,7 +17,7 @@ Commands:
                 (push the change and tag, create a github release)
   release       perform both `vp version` and `vp publish`
 
-Parameters for list:
+Options and parameters for list:
   -g|--global   inspect contents of ~./vmodules (default is ./[src/]modules)
   [<pkg names>] names of the package to print its version
 
@@ -32,7 +32,6 @@ Parameters for version and publish:
                 (also major, minor or patch for bumping the existing version)
 
 Options for version, publish and release:
-  -c|--config <name> file name or path of the config file
   --no-changes       do not update the changelog
   --no-bump          do not bump the version in the package manifest
   --no-vlang         do not version and publish using v and v.mod
