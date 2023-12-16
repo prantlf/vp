@@ -162,8 +162,6 @@ jobs:
         files: ${{ needs.linux.outputs.changed-files }}
     - name: Unshelve output
       uses: prantlf/unshelve-output-action@v5
-      with:
-        include-windows: false
     - name: Publish release
       uses: prantlf/finish-release-action@v1
       env:
