@@ -1,4 +1,5 @@
 import os { join_path_single }
+import prantlf.osutil { find_file }
 import v.vmod { Manifest, from_file }
 
 fn get_manifest_version(vmod_dir string) !string {

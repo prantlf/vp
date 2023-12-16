@@ -3,7 +3,7 @@ import net.urllib { query_escape }
 import os { getenv_opt, ls, read_file }
 import prantlf.jany { Any }
 import prantlf.json { ParseOpts, StringifyOpts, parse, stringify }
-import prantlf.osutil { ExecuteOpts, execute, execute_opt }
+import prantlf.osutil { ExecuteOpts, execute, execute_opt, find_file }
 import prantlf.pcre { NoMatch, pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
 

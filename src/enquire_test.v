@@ -2,27 +2,6 @@ module main
 
 import os { chdir, getwd }
 
-fn test_find_file_curdir() {
-	cwd := getwd()
-	dir, name := find_file('v.mod')!
-	assert dir == cwd
-	assert name == '${cwd}${os.path_separator}v.mod'
-}
-
-fn test_find_file_subdir() {
-	cwd := getwd()
-	chdir('src')!
-	dir, name := find_file('v.mod')!
-	chdir('..')!
-	assert dir == cwd
-	assert name == '${cwd}${os.path_separator}v.mod'
-}
-
-fn test_find_file_miss() {
-	find_file('package.json') or { return }
-	assert false
-}
-
 fn test_find_manifest_or_package() {
 	cwd := getwd()
 	vlang, node, mod_dir := find_manifest_or_package(Opts{})

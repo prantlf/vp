@@ -1,6 +1,7 @@
-import os { exists, getwd, join_path_single, read_lines, real_path, vmodules_dir }
+import os { exists, join_path_single, read_lines, vmodules_dir }
 import v.vmod
 import prantlf.debug { new_debug }
+import prantlf.osutil { find_file }
 import prantlf.pcre { NoMatch, pcre_compile }
 
 const d = new_debug('vp')
@@ -114,24 +115,6 @@ fn get_repo_url(path string) !(string, bool) {
 
 	d.log_str('no url found')
 	return '', false
-}
-
-fn find_file(name string) !(string, string) {
-	mut dir := getwd()
-	for i := 0; i < 10; i++ {
-		mut file := join_path_single(dir, name)
-		mut ddir := d.rwd(dir)
-		d.log('checking if "%s" exists in "%s"', name, ddir)
-		if exists(file) {
-			dir = real_path(dir)
-			ddir = d.rwd(dir)
-			d.log('"%s" found in "%s"', name, ddir)
-			file = join_path_single(dir, name)
-			return dir, file
-		}
-		dir = join_path_single(dir, '..')
-	}
-	return error('"${name}" not found')
 }
 
 fn unreachable() IError {

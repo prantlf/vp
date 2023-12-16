@@ -13,5 +13,6 @@ fn test_find_package() {
 
 fn test_read_json() {
 	pkg_file := join_path_single('src', 'package.json')
-	read_json(pkg_file)!
+	any := read_json(pkg_file)!
+	assert any.get('name')!.string()! == 'dummy'
 }

@@ -2,7 +2,7 @@ import os { exists, join_path_single, read_file, write_file }
 import prantlf.debug { rwd }
 import prantlf.jany { Any, any_null }
 import prantlf.json { ParseOpts, StringifyOpts, parse, stringify }
-import prantlf.osutil { execute }
+import prantlf.osutil { execute, find_file }
 
 fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 	pkg_file := join_path_single(pkg_dir, 'package.json')
