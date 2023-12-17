@@ -1,8 +1,7 @@
-import os { exists, join_path_single, read_lines, vmodules_dir }
+import os { exists, join_path_single, vmodules_dir }
 import v.vmod
 import prantlf.debug { new_debug }
-import prantlf.osutil { find_file }
-import prantlf.pcre { NoMatch, pcre_compile }
+import prantlf.github { find_git, get_repo_path }
 
 const d = new_debug('vp')
 
@@ -46,39 +45,26 @@ fn get_link(forced_name string, force bool) !(string, string) {
 fn analyse_module(force bool) !(string, string, string, vmod.Manifest) {
 	vmod_dir, _, manifest := get_manifest()!
 
-	_, git_path := find_file('.git') or {
+	git_path := find_git() or {
 		if force {
-			d.log_str('missing ".git" directory')
+			d.log_str(err.msg())
 			return '', '', vmod_dir, manifest
 		} else {
-			return error('missing ".git"${hint}')
+			return err
 		}
 	}
-	mut url, found := get_repo_url(git_path)!
-	if !found {
+	mut repo_path := get_repo_path(git_path) or {
 		if force {
-			d.log_str('missing git repository url')
+			d.log_str(err.msg())
+			return '', '', vmod_dir, manifest
 		} else {
-			return error('url in ".git/config" not detected${hint}')
+			return err
 		}
 	}
 
-	if url.starts_with('git@') && url.ends_with('.git') {
-		url = url[..url.len - 4]
-	}
-	re_name := pcre_compile(r'^.+github\.com[:/]([^/]+)/(.+)', 0) or { panic(err) }
-	m := re_name.exec(url, 0) or {
-		if err is NoMatch {
-			if force {
-				d.log_str('unsupported git repository url')
-				return '', '', vmod_dir, manifest
-			}
-			return error('unsupported git url "${url}"${hint}')
-		}
-		return err
-	}
-	scope := m.group_text(url, 1) or { return unreachable() }
-	name := m.group_text(url, 2) or { return unreachable() }
+	split_path := repo_path.split('/')
+	scope := split_path[0]
+	name := split_path[1]
 
 	// if name != manifest.name {
 	// 	if force {
@@ -95,30 +81,6 @@ fn analyse_module(force bool) !(string, string, string, vmod.Manifest) {
 	dvmod_dir := d.rwd(vmod_dir)
 	d.log('module "%s.%s" found in "%s"', scope, manifest.name, dvmod_dir)
 	return scope, manifest.name, vmod_dir, manifest
-}
-
-fn get_repo_url(path string) !(string, bool) {
-	file := join_path_single(path, 'config')
-	dfile := d.rwd(file)
-	d.log('reading file "%s"', dfile)
-	lines := read_lines(file)!
-
-	mut re_url := pcre_compile(r'\s*url\s*=\s*(.+)$', 0) or { panic(err) }
-	for line in lines {
-		d.log('looking for url in "%s"', line)
-		if m := re_url.exec(line, 0) {
-			url := m.group_text(line, 1) or { return unreachable() }
-			d.log('url "%s" found', url)
-			return url, true
-		}
-	}
-
-	d.log_str('no url found')
-	return '', false
-}
-
-fn unreachable() IError {
-	panic('unreachable code')
 }
 
 fn find_manifest_or_package(opts &Opts) (bool, bool, string) {

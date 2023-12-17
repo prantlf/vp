@@ -20,12 +20,6 @@ fn test_get_current_version_package() {
 	assert ver == '0.0.1'
 }
 
-fn test_get_repo_url() {
-	url, found := get_repo_url('.git')!
-	assert url == 'git@github.com:prantlf/vp.git' || url == 'https://github.com/prantlf/vp'
-	assert found == true
-}
-
 fn test_get_name_manifest() {
 	name := get_name(Opts{})!
 	assert name == 'vp'

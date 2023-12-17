@@ -42,7 +42,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 			return '', ''
 		}
 		ver = if m := re_verline.exec(line, 0) {
-			m.group_text(line, 1) or { return unreachable() }
+			m.group_text(line, 1) or { panic(err) }
 		} else {
 			return error('unexpected output of newchanges: "${line}"')
 		}
