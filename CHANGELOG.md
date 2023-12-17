@@ -1,5 +1,15 @@
 # Changes
 
+## [0.10.0](https://github.com/prantlf/vp/compare/v0.9.0...v0.10.0) (2023-12-17)
+
+### Features
+
+* Propagate dry run to npm ([0114ad4](https://github.com/prantlf/vp/commit/0114ad449879bbb70df89c9097aee5ea4f68d97e))
+
+### Bug Fixes
+
+* Use proper parameter for npm verbosity ([f22f505](https://github.com/prantlf/vp/commit/f22f5057d2bf7f0d3fc5a5383f85042d1330edd4))
+
 ## [0.9.0](https://github.com/prantlf/vp/compare/v0.8.0...v0.9.0) (2023-12-15)
 
 ### Features
