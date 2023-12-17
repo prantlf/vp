@@ -9,7 +9,9 @@ fn get_manifest_version(vmod_dir string) !string {
 }
 
 fn find_manifest() !(string, string) {
-	return find_file('v.mod')!
+	return find_file('v.mod') or {
+		error('v.mod not found')
+	}
 }
 
 fn get_manifest() !(string, string, Manifest) {

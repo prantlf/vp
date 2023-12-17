@@ -81,6 +81,7 @@ struct Opts {
 	version_detect  string  = r'version'   @[json: 'version-detect']
 	version_replace string = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'   @[json: 'version-replace']
 	gh_token        string   @[json: 'gh-token']
+	npm_token       string   @[json: 'npm-token']
 }
 
 fn main() {
