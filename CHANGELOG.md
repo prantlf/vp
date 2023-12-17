@@ -1,5 +1,11 @@
 # Changes
 
+## [0.11.0](https://github.com/prantlf/vp/compare/v0.10.0...v0.11.0) (2023-12-17)
+
+### Features
+
+* Authenticate npm using process environment ([e74d80b](https://github.com/prantlf/vp/commit/e74d80b7e9cfb566b1ba4f4a0f3bedfde67dd720))
+
 ## [0.10.0](https://github.com/prantlf/vp/compare/v0.9.0...v0.10.0) (2023-12-17)
 
 ### Features
