@@ -60,14 +60,11 @@ fn publish_package(ver string, opts &Opts) ! {
 	}
 
 	if opts.yes || confirm('publish version ${ver}${mode}')! {
-		mut extra_args := if opts.verbose { ' -v' } else { '' }
+		mut extra_args := if opts.verbose { ' --verbose' } else { ' --quiet' }
 		if opts.dry_run {
 			extra_args += ' --dry-run'
 		}
 		out := execute('npm publish --access public${extra_args}')!
-		// d.log_str(out)
-		// eprintln('')
-		// println('published version ${ver}${mode}')
 		println(out)
 	}
 }
