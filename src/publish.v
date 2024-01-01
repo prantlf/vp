@@ -1,6 +1,6 @@
 import os { ls, read_file }
 import prantlf.github { create_release, find_git, get_gh_token, get_release, get_repo_path, upload_asset }
-import prantlf.json { ParseOpts, parse }
+import prantlf.json { parse }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
 
@@ -116,7 +116,7 @@ fn was_released(repo string, token string, ver string) !bool {
 
 fn post_release(repo string, token string, ver string, log string, assets []string) ! {
 	body := create_release(repo, token, 'v${ver}', ver, log)!
-	params := parse(body, ParseOpts{})!.object()!
+	params := parse(body)!.object()!
 	id := params['id']!.int()!
 	for asset in assets {
 		data := read_file(asset)!

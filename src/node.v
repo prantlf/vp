@@ -1,7 +1,7 @@
 import os { create, exists, getenv_opt, home_dir, join_path_single, read_file, read_lines, write_file }
 import prantlf.debug { rwd }
 import prantlf.jany { Any, any_null }
-import prantlf.json { ParseOpts, StringifyOpts, parse, stringify }
+import prantlf.json { StringifyOpts, parse, stringify_opt }
 import prantlf.osutil { execute, find_file }
 
 fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
@@ -26,13 +26,13 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 	if !opts.dry_run {
 		dpkg_file := d.rwd(pkg_file)
 		d.log('writing file "%s"', dpkg_file)
-		text := stringify(pkg, StringifyOpts{ pretty: true })
+		text := stringify_opt(pkg, &StringifyOpts{ pretty: true })
 		write_file(pkg_file, text)!
 
 		if lck_is {
 			dlck_file := d.rwd(lck_file)
 			d.log('writing file "%s"', dlck_file)
-			text2 := stringify(lck, StringifyOpts{ pretty: true })
+			text2 := stringify_opt(lck, &StringifyOpts{ pretty: true })
 			write_file(lck_file, text2)!
 		}
 	}
@@ -145,16 +145,14 @@ fn set_auth_token(file string, lines []string, token string) ! {
 }
 
 fn find_package() !(string, string) {
-	return find_file('package.json') or {
-		error('package.json not found')
-	}
+	return find_file('package.json') or { error('package.json not found') }
 }
 
 fn read_json(file string) !Any {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	text := read_file(file)!
-	return parse(text, ParseOpts{})!
+	return parse(text)!
 }
 
 fn get_npm_token() !string {
