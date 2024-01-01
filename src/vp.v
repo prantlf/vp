@@ -1,6 +1,6 @@
 import prantlf.cli { Cli, Env, run }
 
-const version = '0.11.0'
+const version = '0.11.1'
 
 const usage = 'Helps with development, installation and maintenance of VPM packages.
 
