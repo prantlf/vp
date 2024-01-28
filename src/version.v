@@ -102,12 +102,22 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 			return
 		}
 
-		mut out := execute('git commit -am "${ver} [skip ci]"')!
+		commit_skip_ci := if opts.commit_skip_ci {
+			' [skip ci]'
+		} else {
+			''
+		}
+		mut out := execute('git commit -am "${ver}${commit_skip_ci}"')!
 		d.log_str(out)
 		eprintln('')
 
 		if tag {
-			out = execute('git tag -a "v${ver}" -m "${ver}"')!
+			tag_skip_ci := if opts.tag_skip_ci {
+				' [skip ci]'
+			} else {
+				''
+			}
+			out = execute('git tag -a "v${ver}" -m "${ver}${tag_skip_ci}"')!
 			d.log_str(out)
 
 			println('prepared version ${ver} for pushing')

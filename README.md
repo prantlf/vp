@@ -42,22 +42,24 @@ Helps with development, installation and maintenance of VPM packages.
                     (also major, minor or patch for bumping the existing version)
 
     Options for version, publish and release:
-      --no-changes       do not update the changelog
-      --no-bump          do not bump the version in the package manifest
-      --no-vlang         do not version and publish using v and v.mod
-      --no-node          do not version and publish using npm and package.json
-      --no-commit        do not commit the changes during publishing
-      --no-tag           do not tag the commit during publishing
-      --no-push          do not push the commit and tag during publishing
-      --no-release       do not create a new github release
-      --no-archives      do not upload platform archives automatically as assets
-      --no-failure       do not fail in case of no version change or release
-      --nc-args <args>   extra arguments for newchanges, enclosed in quotes
-      -a|--assets <file> files to upload as extra assets to the github release
+      --no-changes        do not update the changelog
+      --no-bump           do not bump the version in the package manifest
+      --no-vlang          do not version and publish using v and v.mod
+      --no-node           do not version and publish using npm and package.json
+      --no-commit         do not commit the changes during publishing
+      --no-commit-skip-ci do not add [skip ci] to the commit with the changes
+      --no-tag            do not tag the commit during publishing
+      --no-tag-skip-ci    do not add [skip ci] to the commit with the tag
+      --no-push           do not push the commit and tag during publishing
+      --no-release        do not create a new github release
+      --no-archives       do not upload platform archives automatically as assets
+      --no-failure        do not fail in case of no version change or release
+      --nc-args <args>    extra arguments for newchanges, enclosed in quotes
+      -a|--assets <file>  files to upload as extra assets to the github release
       -b|--bump-files <file> extra files in which to bump the version
-      -y|--yes           answer the push and reelase confirmations with "yes"
-      -d|--dry-run       only print what would be done without doing it
-      -v|--verbose       print the new changes on the console too
+      -y|--yes            answer the push and reelase confirmations with "yes"
+      -d|--dry-run        only print what would be done without doing it
+      -v|--verbose        print the new changes on the console too
 
     Common options:
       -c|--config <name>  file name of path of the config file
