@@ -1,7 +1,7 @@
 Module {
 	name: 'vp'
 	description: 'Helps with development, installation and maintenance of VPM packages.'
-	version: '0.11.1'
+	version: '0.12.0'
 	license: 'MIT'
 	dependencies: [
 		'prantlf.cli', 'prantlf.debug', 'prantlf.github', 'prantlf.jany',

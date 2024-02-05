@@ -1,5 +1,12 @@
 # Changes
 
+## [0.12.0](https://github.com/prantlf/vp/compare/v0.11.1...v0.12.0) (2024-02-05)
+
+### Features
+
+* Allow removing "skip ci" from the versioning commits ([514a15d](https://github.com/prantlf/vp/commit/514a15dd156b2076bccd126b33539d70ca5ea878))
+* Allow versioning a Rust cargo ([8a08026](https://github.com/prantlf/vp/commit/8a08026c1f0356840689d6c5f31dc5c77007f4ce))
+
 ## [0.11.1](https://github.com/prantlf/vp/compare/v0.11.0...v0.11.1) (2024-01-01)
 
 ### Bug Fixes
