@@ -36,6 +36,7 @@ Options for version, publish and release:
   --no-bump           do not bump the version in the package manifest
   --no-vlang          do not version and publish using v and v.mod
   --no-node           do not version and publish using npm and package.json
+  --no-rust           do not version and publish using rust and Cargo.toml
   --no-commit         do not commit the changes during publishing
   --no-commit-skip-ci do not add [skip ci] to the commit with the changes
   --no-tag            do not tag the commit during publishing
@@ -68,6 +69,7 @@ struct Opts {
 	bump            bool = true
 	vlang           bool = true
 	node            bool = true
+	rust            bool = true
 	commit          ?bool
 	commit_skip_ci  bool = true
 	tag             ?bool

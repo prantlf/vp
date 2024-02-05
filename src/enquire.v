@@ -1,4 +1,5 @@
 import os { exists, join_path_single, vmodules_dir }
+import toml { parse_file }
 import v.vmod
 import prantlf.debug { new_debug }
 import prantlf.github { find_git, get_repo_path }
@@ -83,13 +84,14 @@ fn analyse_module(force bool) !(string, string, string, vmod.Manifest) {
 	return scope, manifest.name, vmod_dir, manifest
 }
 
-fn find_manifest_or_package(opts &Opts) (bool, bool, string) {
+fn find_manifest_or_package_or_cargo(opts &Opts) (bool, bool, bool, string) {
 	vdir := if opts.vlang {
 		v, _ := find_manifest() or { '', '' }
 		v
 	} else {
 		''
 	}
+
 	ndir := if opts.node {
 		if vdir.len != 0 {
 			pkg_file := join_path_single(vdir, 'package.json')
@@ -105,52 +107,83 @@ fn find_manifest_or_package(opts &Opts) (bool, bool, string) {
 	} else {
 		''
 	}
-	return if vdir.len != 0 {
-		true, ndir.len != 0, vdir
-	} else if ndir.len != 0 {
-		false, true, ndir
+
+	cdir := if opts.rust {
+		if vdir.len != 0 {
+			cargo_file := join_path_single(vdir, 'Cargo.toml')
+			if exists(cargo_file) {
+				vdir
+			} else {
+				''
+			}
+		} else {
+			n, _ := find_cargo() or { '', '' }
+			n
+		}
 	} else {
-		false, false, ''
+		''
+	}
+
+	return if vdir.len != 0 {
+		true, ndir.len != 0, cdir.len != 0, vdir
+	} else if ndir.len != 0 {
+		false, true, cdir.len != 0, ndir
+	} else if cdir.len != 0 {
+		false, false, true, cdir
+	} else {
+		false, false, false, ''
 	}
 }
 
 fn get_current_version(vmod_dir string) !string {
 	vmod_file := join_path_single(vmod_dir, 'v.mod')
-	return if exists(vmod_file) {
+	if exists(vmod_file) {
 		manifest := read_manifest(vmod_file)!
-		manifest.version
-	} else {
-		pkg_file := join_path_single(vmod_dir, 'package.json')
-		if exists(pkg_file) {
-			pkg := read_json(pkg_file)!
-			if ver := pkg.object()!['version'] {
-				ver.string()!
-			} else {
-				''
-			}
+		return manifest.version
+	}
+
+	pkg_file := join_path_single(vmod_dir, 'package.json')
+	if exists(pkg_file) {
+		pkg := read_json(pkg_file)!
+		return if ver := pkg.object()!['version'] {
+			ver.string()!
 		} else {
-			error('neither v.mod nor package.json was found')
+			''
 		}
 	}
+
+	cargo_file := join_path_single(vmod_dir, 'Cargo.toml')
+	if exists(cargo_file) {
+		cargo := parse_file(cargo_file)!
+		return cargo.value('package.version').string()
+	}
+
+	return error('neither v.mod nor package.json nor Cargo.toml was found')
 }
 
 fn get_name(opts &Opts) !string {
-	vlang, _, vmod_dir := find_manifest_or_package(opts)
+	vlang, node, _, vmod_dir := find_manifest_or_package_or_cargo(opts)
 	if vmod_dir.len == 0 {
-		return error('neither v.mod nor package.json was found')
+		return error('neither v.mod nor package.json nor Cargo.toml was found')
 	}
 
-	return if vlang {
+	if vlang {
 		vmod_file := join_path_single(vmod_dir, 'v.mod')
 		manifest := read_manifest(vmod_file)!
-		manifest.name
-	} else {
+		return manifest.name
+	}
+
+	if node {
 		pkg_file := join_path_single(vmod_dir, 'package.json')
 		pkg := read_json(pkg_file)!
-		if name := pkg.object()!['name'] {
+		return if name := pkg.object()!['name'] {
 			name.string()!
 		} else {
 			''
 		}
 	}
+
+	cargo_file := join_path_single(vmod_dir, 'Cargo.toml')
+	cargo := parse_file(cargo_file)!
+	return cargo.value('package.name').string()
 }

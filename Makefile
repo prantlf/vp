@@ -22,7 +22,7 @@ build:
 	v $(VFLAGS) -o vp .
 
 test:
-	v -use-os-system-to-run test .
+	v test .
 	./test.sh
 
 clean:

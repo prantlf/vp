@@ -10,9 +10,9 @@ const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0
 	0)!
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
-	vlang, node, vmod_dir := find_manifest_or_package(opts)
+	vlang, node, rust, vmod_dir := find_manifest_or_package_or_cargo(opts)
 	if vmod_dir.len == 0 && (!opts.changes || opts.bump) {
-		return error('neither v.mod nor package.json was found')
+		return error('neither v.mod nor package.json nor Cargo.toml was found')
 	}
 
 	mode := if opts.dry_run {
@@ -63,6 +63,9 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 		}
 		if node {
 			set_package_version(ver, vmod_dir, opts)!
+		}
+		if rust {
+			set_cargo_version(ver, vmod_dir, opts)!
 		}
 	}
 	for bump_file in opts.bump_files {

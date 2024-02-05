@@ -10,7 +10,7 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 		return
 	}
 
-	d.log('setting package version to "%s"', version)
+	d.log('setting package version to "%s"', ver)
 	pkg := read_json(pkg_file)!
 	pkg.object()!['version'] = ver
 
