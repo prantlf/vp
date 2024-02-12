@@ -1,6 +1,6 @@
 Module {
 	name: 'vp'
-	description: 'Helps with development, installation and maintenance of VPM packages.'
+	description: 'Helps with development, installation and maintenance of VPM, NPM and Cargo packages.'
 	version: '0.12.0'
 	license: 'MIT'
 	dependencies: [

@@ -1,6 +1,6 @@
 # V Package Manager
 
-Helps with development, installation and maintenance of VPM packages.
+Helps with development, installation and maintenance of VPM, NPM and Cargo packages.
 
 ## Synopsis
 

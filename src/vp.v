@@ -2,7 +2,7 @@ import prantlf.cli { Cli, Env, run }
 
 const version = '0.12.0'
 
-const usage = 'Helps with development, installation and maintenance of VPM packages.
+const usage = 'Helps with development, installation and maintenance of VPM, NPM and Cargo packages.
 
 Usage: vp [options] <command> [parameters]
 
