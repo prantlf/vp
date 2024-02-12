@@ -1,5 +1,11 @@
 # Changes
 
+## [0.12.1](https://github.com/prantlf/vp/compare/v0.12.0...v0.12.1) (2024-02-12)
+
+### Bug Fixes
+
+* Upgrade dependencies ([0d1f5e6](https://github.com/prantlf/vp/commit/0d1f5e603910c6e005a59020fcd834ba6fc27ba7))
+
 ## [0.12.0](https://github.com/prantlf/vp/compare/v0.11.1...v0.12.0) (2024-02-05)
 
 ### Features
