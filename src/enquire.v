@@ -188,6 +188,10 @@ fn get_name(opts &Opts) !string {
 	return cargo.value('package.name').string()
 }
 
+fn is_github(repo string) bool {
+	return repo.contains('github')
+}
+
 fn is_gitlab(repo string) bool {
 	return repo.contains('gitlab')
 }

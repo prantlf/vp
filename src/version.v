@@ -2,6 +2,7 @@ import os { create, join_path_single, read_file }
 import semver { Increment }
 import strings { new_builder }
 import prantlf.debug { rwd }
+import prantlf.github { find_git, get_repo_path }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, NoReplace, RegEx, pcre_compile }
 import prantlf.semvut { next_prerelease, next_release }
@@ -120,7 +121,9 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 			return
 		}
 
-		commit_skip_ci := if opts.commit_skip_ci {
+		git_path := find_git()!
+		repo_path := get_repo_path(git_path)!
+		commit_skip_ci := if opts.commit_skip_ci && is_github(repo_path) {
 			' [skip ci]'
 		} else {
 			''
@@ -135,7 +138,7 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 		eprintln('')
 
 		if tag {
-			tag_skip_ci := if opts.tag_skip_ci {
+			tag_skip_ci := if opts.tag_skip_ci && is_github(repo_path) {
 				' [skip ci]'
 			} else {
 				''
