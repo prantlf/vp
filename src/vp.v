@@ -28,8 +28,8 @@ Options for link and unlink:
   -f|--force    proceed even if the guessed package name was not reliable
 
 Parameters for version and publish:
-  [<version>]   version if the changelog update is disabled (also
-                major, minor, patch to bump the current version)
+  [<version>]   version if the changelog update is disabled (also major,
+                minor, patch or pre to bump the current version)
 
 Options for version, publish and release:
   --no-changes        do not update the changelog
@@ -46,6 +46,9 @@ Options for version, publish and release:
   --no-archives       do not upload platform archives automatically as assets
   --no-failure        do not fail in case of no version change or release
   --nc-args <args>    extra arguments for newchanges, enclosed in quotes
+  --pre-release       bump the existing pre-release number
+  --pre-id <id>       first pre-release identifier (default: "next")
+  -0|--bump-major-0   bump the major version also if it is 0
   -t|--tag-prefix <prefix> expect git tags prefixed (default: "v")
   -a|--assets <file>  files to upload as extra assets to the github release
   -b|--bump-files <file> extra files in which to bump the version
@@ -80,6 +83,9 @@ struct Opts {
 	archives        bool = true
 	failure         bool = true
 	nc_args         string   @[json: 'nc-args']
+	bump_major_0    bool     @[json: 'bump-major-0']
+	pre_release     bool     @[json: 'pre-release']
+	pre_id          string     = 'next'   @[json: 'pre-id']
 	tag_prefix      string = 'v'   @[json: 'tag-prefix']
 	assets          []string
 	bump_files      []string @[json: 'bump-files'; split]
@@ -87,7 +93,7 @@ struct Opts {
 	dry_run         bool     @[json: 'dry-run']
 	verbose         bool
 	version_detect  string  = r'version'   @[json: 'version-detect']
-	version_replace string = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'   @[json: 'version-replace']
+	version_replace string = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[.0-9A-Za-z-]+)?'   @[json: 'version-replace']
 	gh_token        string   @[json: 'gh-token']
 	npm_token       string   @[json: 'npm-token']
 }

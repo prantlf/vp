@@ -38,9 +38,8 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       -f|--force    proceed even if the guessed package name was not reliable
 
     Parameters for version and publish:
-      -t|--tag-prefix <prefix>  expect git tags prefixed (default: "v")
-      [<version>]               version if the changelog update is disabled
-                                (also major, minor or patch for bumping the existing version)
+      [<version>]   version if the changelog update is disabled (also major,
+                    minor, patch or pre to bump the current version)
 
     Options for version, publish and release:
       --no-changes        do not update the changelog
@@ -57,6 +56,10 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       --no-archives       do not upload platform archives automatically as assets
       --no-failure        do not fail in case of no version change or release
       --nc-args <args>    extra arguments for newchanges, enclosed in quotes
+      --pre-release       bump the existing pre-release number
+      --pre-id <id>       first pre-release identifier (default: "next")
+      -0|--bump-major-0   bump the major version also if it is 0
+      -t|--tag-prefix <prefix> expect git tags prefixed (default: "v")
       -a|--assets <file>  files to upload as extra assets to the github release
       -b|--bump-files <file> extra files in which to bump the version
       -y|--yes            answer the push and reelase confirmations with "yes"

@@ -4,9 +4,10 @@ import strings { new_builder }
 import prantlf.debug { rwd }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { NoMatch, NoReplace, RegEx, pcre_compile }
+import prantlf.semvut { next_prerelease, next_release }
 import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
 
-const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))',
+const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[.0-9A-Za-z-]+)?)',
 	0)!
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
@@ -23,7 +24,20 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 	mut ver := ''
 	mut log := ''
 	if opts.changes {
-		out := execute_opt('newchanges -Nuv${mode} -t "${opts.tag_prefix}" ${opts.nc_args}', ExecuteOpts{
+		mut extra_args := mode
+		if opts.tag_prefix != 'v' {
+			extra_args += ' -t "${opts.tag_prefix}"'
+		}
+		if opts.pre_release {
+			extra_args += ' --pre-release'
+		}
+		if opts.pre_id != 'v' {
+			extra_args += ' --pre-id "${opts.pre_id}"'
+		}
+		if opts.nc_args.len > 0 {
+			extra_args += ' ${opts.nc_args}'
+		}
+		out := execute_opt('newchanges -Nuv${extra_args}', ExecuteOpts{
 			trim_trailing_whitespace: true
 		})!
 		log = until_last_nth_line_not_empty(out, 2)
@@ -47,7 +61,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 			return error('unexpected output of newchanges: "${line}"')
 		}
 	} else {
-		ver = get_next_version(version, vmod_dir)!
+		ver = get_next_version(version, vmod_dir, opts.pre_id, opts.bump_major_0)!
 	}
 
 	mut re_vertxt := unsafe { &RegEx(nil) }
@@ -84,7 +98,7 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 		''
 	}
 
-	tagver := "${opts.tag_prefix}${ver}"
+	tagver := '${opts.tag_prefix}${ver}'
 	if commit {
 		if tag {
 			out := execute_opt('git tag -l "${tagver}"', ExecuteOpts{
@@ -133,18 +147,27 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 	}
 }
 
-fn get_next_version(new_ver string, vmod_dir string) !string {
+fn get_next_version(new_ver string, vmod_dir string, pre_id string, bump_major_0 bool) !string {
 	if new_ver.len == 0 {
 		return error('updating the changelog was disabled, specify the new version on the command line')
 	}
 
 	ver := get_current_version(vmod_dir)!
-	return if increment := get_increment(new_ver) {
+	return if new_ver == 'pre' {
 		if ver.len == 0 {
 			return error('package manifest contains no version')
 		}
 		orig_ver := semver.from(ver)!
-		orig_ver.increment(increment).str()
+		next_prerelease(orig_ver, pre_id).str()
+	} else if mut increment := get_increment(new_ver) {
+		if ver.len == 0 {
+			return error('package manifest contains no version')
+		}
+		orig_ver := semver.from(ver)!
+		if increment == Increment.major && orig_ver.major == 0 && !bump_major_0 {
+			increment = Increment.minor
+		}
+		next_release(orig_ver, increment).str()
 	} else {
 		semver.from(new_ver)!
 		if ver == new_ver {

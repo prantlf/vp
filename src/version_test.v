@@ -7,12 +7,12 @@ const test_opts = Opts{
 	dry_run: true
 }
 const test_re_vertxt = pcre_compile('version', pcre.opt_caseless) or { panic('re_vertxt') }
-const test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', 0) or {
+const test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[.0-9A-Za-z-]+)?', 0) or {
 	panic('re_vernum')
 }
 
 fn test_get_next_version_empty() {
-	get_next_version('', '.') or {
+	get_next_version('', '.', 'next', false) or {
 		assert err.msg() == 'updating the changelog was disabled, specify the new version on the command line'
 		return
 	}
@@ -20,7 +20,7 @@ fn test_get_next_version_empty() {
 }
 
 fn test_get_next_version_invalid() {
-	get_next_version('dummy', '.') or {
+	get_next_version('dummy', '.', 'next', false) or {
 		assert err.msg() == 'Invalid version format for input "dummy"'
 		return
 	}
@@ -28,22 +28,32 @@ fn test_get_next_version_invalid() {
 }
 
 fn test_get_next_version_actual() {
-	assert get_next_version('1.0.0', '.')! == '1.0.0'
+	assert get_next_version('1.0.0', '.', 'next', false)! == '1.0.0'
+}
+
+fn test_get_next_version_pre() {
+	ver := '${semver.from(version)!.increment(Increment.patch)}-next.0'
+	assert get_next_version('pre', '.', 'next', false)! == ver
 }
 
 fn test_get_next_version_patch() {
 	ver := semver.from(version)!.increment(Increment.patch).str()
-	assert get_next_version('patch', '.')! == ver
+	assert get_next_version('patch', '.', 'next', false)! == ver
 }
 
 fn test_get_next_version_minor() {
 	ver := semver.from(version)!.increment(Increment.minor).str()
-	assert get_next_version('minor', '.')! == ver
+	assert get_next_version('minor', '.', 'next', false)! == ver
 }
 
-fn test_get_next_version_major() {
+fn test_get_next_version_major_remain_0() {
+	ver := semver.from(version)!.increment(Increment.minor).str()
+	assert get_next_version('major', '.', 'next', false)! == ver
+}
+
+fn test_get_next_version_major_bump_0() {
 	ver := semver.from(version)!.increment(Increment.major).str()
-	assert get_next_version('major', '.')! == ver
+	assert get_next_version('major', '.', 'next', true)! == ver
 }
 
 fn test_update_version_exists() {
