@@ -1,5 +1,16 @@
 # Changes
 
+## [0.14.0](https://github.com/prantlf/vp/compare/v0.13.0...v0.14.0) (2024-03-30)
+
+### Features
+
+* Allow using --no-verify for disabling git hooks ([6ad6766](https://github.com/prantlf/vp/commit/6ad676674a9147cad1861f7b9dfdc449bf5da53b))
+* Allow using -o ci.skip for disabling gitlab pipeline ([4a23cec](https://github.com/prantlf/vp/commit/4a23cec51934eddfb80e9f7b46e6ee2c6881c806))
+
+### Bug Fixes
+
+* Add "skip ci" to commit and tag mesages only for github ([99ac8ac](https://github.com/prantlf/vp/commit/99ac8acce83330d3e4483d7c1e358ee89adf43e5))
+
 ## [0.13.0](https://github.com/prantlf/vp/compare/v0.12.1...v0.13.0) (2024-03-30)
 
 ### Features
