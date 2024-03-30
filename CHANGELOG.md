@@ -1,5 +1,12 @@
 # Changes
 
+## [0.13.0](https://github.com/prantlf/vp/compare/v0.12.1...v0.13.0) (2024-03-30)
+
+### Features
+
+* Allow specifying a tag prefix ([818fc38](https://github.com/prantlf/vp/commit/818fc38d3a42b3d2aee2182d9a6d1a0ec1fffded))
+* Support pre-releases ([e48d55b](https://github.com/prantlf/vp/commit/e48d55b663b16670c905fbb8bab97dbb855f731b))
+
 ## [0.12.1](https://github.com/prantlf/vp/compare/v0.12.0...v0.12.1) (2024-02-12)
 
 ### Bug Fixes
