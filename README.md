@@ -55,6 +55,7 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       --no-release        do not create a new github release
       --no-archives       do not upload platform archives automatically as assets
       --no-failure        do not fail in case of no version change or release
+      --no-verify         append --no-verify to commit and push
       --nc-args <args>    extra arguments for newchanges, enclosed in quotes
       --pre-release       bump the existing pre-release number
       --pre-id <id>       first pre-release identifier (default: "next")

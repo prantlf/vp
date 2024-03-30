@@ -45,6 +45,7 @@ Options for version, publish and release:
   --no-release        do not create a new github release
   --no-archives       do not upload platform archives automatically as assets
   --no-failure        do not fail in case of no version change or release
+  --no-verify         append --no-verify to commit and push
   --nc-args <args>    extra arguments for newchanges, enclosed in quotes
   --pre-release       bump the existing pre-release number
   --pre-id <id>       first pre-release identifier (default: "next")
@@ -82,6 +83,7 @@ struct Opts {
 	release         bool = true
 	archives        bool = true
 	failure         bool = true
+	verify          bool = true
 	nc_args         string   @[json: 'nc-args']
 	bump_major_0    bool     @[json: 'bump-major-0']
 	pre_release     bool     @[json: 'pre-release']

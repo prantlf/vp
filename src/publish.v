@@ -84,7 +84,12 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 
 	if opts.push && (opts.yes || confirm('push version ${ver}${mode}')!) {
 		if !opts.dry_run {
-			out := execute('git push --atomic origin HEAD "${opts.tag_prefix}${ver}"')!
+			no_verify := if opts.verify {
+				''
+			} else {
+				' --no-verify'
+			}
+			out := execute('git push --atomic${no_verify} origin HEAD "${opts.tag_prefix}${ver}"')!
 			d.log_str(out)
 			eprintln('')
 		}

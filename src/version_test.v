@@ -7,9 +7,8 @@ const test_opts = Opts{
 	dry_run: true
 }
 const test_re_vertxt = pcre_compile('version', pcre.opt_caseless) or { panic('re_vertxt') }
-const test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[.0-9A-Za-z-]+)?', 0) or {
-	panic('re_vernum')
-}
+const test_re_vernum = pcre_compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[.0-9A-Za-z-]+)?',
+	0) or { panic('re_vernum') }
 
 fn test_get_next_version_empty() {
 	get_next_version('', '.', 'next', false) or {
