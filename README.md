@@ -38,8 +38,9 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       -f|--force    proceed even if the guessed package name was not reliable
 
     Parameters for version and publish:
-      [<version>]   version if the changelog update is disabled
-                    (also major, minor or patch for bumping the existing version)
+      -t|--tag-prefix <prefix>  expect git tags prefixed (default: "v")
+      [<version>]               version if the changelog update is disabled
+                                (also major, minor or patch for bumping the existing version)
 
     Options for version, publish and release:
       --no-changes        do not update the changelog
@@ -66,6 +67,11 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       -c|--config <name>  file name of path of the config file
       -V|--version        print the version of the executable and exits
       -h|--help           print the usage information and exits
+
+    Examples:
+      $ vp link prantlf.cargs -f
+      $ vp unlink
+      $ vp publish -v'
 
 ## Listing
 

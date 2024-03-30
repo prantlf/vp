@@ -23,7 +23,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 	mut ver := ''
 	mut log := ''
 	if opts.changes {
-		out := execute_opt('newchanges -Nuv${mode} ${opts.nc_args}', ExecuteOpts{
+		out := execute_opt('newchanges -Nuv${mode} -t "${opts.tag_prefix}" ${opts.nc_args}', ExecuteOpts{
 			trim_trailing_whitespace: true
 		})!
 		log = until_last_nth_line_not_empty(out, 2)
@@ -84,14 +84,15 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 		''
 	}
 
+	tagver := "${opts.tag_prefix}${ver}"
 	if commit {
 		if tag {
-			out := execute_opt('git tag -l "v${ver}"', ExecuteOpts{
+			out := execute_opt('git tag -l "${tagver}"', ExecuteOpts{
 				trim_trailing_whitespace: true
 			})!
 			d.log_str(out)
 			if out.len > 0 {
-				msg := 'tag v${ver} already exists'
+				msg := 'tag ${tagver} already exists'
 				if opts.failure {
 					return error(msg)
 				}
@@ -120,7 +121,7 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 			} else {
 				''
 			}
-			out = execute('git tag -a "v${ver}" -m "${ver}${tag_skip_ci}"')!
+			out = execute('git tag -a "${tagver}" -m "${ver}${tag_skip_ci}"')!
 			d.log_str(out)
 
 			println('prepared version ${ver} for pushing')

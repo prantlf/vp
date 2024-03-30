@@ -28,8 +28,8 @@ Options for link and unlink:
   -f|--force    proceed even if the guessed package name was not reliable
 
 Parameters for version and publish:
-  [<version>]   version if the changelog update is disabled
-                (also major, minor or patch for bumping the existing version)
+  [<version>]   version if the changelog update is disabled (also
+                major, minor, patch to bump the current version)
 
 Options for version, publish and release:
   --no-changes        do not update the changelog
@@ -46,6 +46,7 @@ Options for version, publish and release:
   --no-archives       do not upload platform archives automatically as assets
   --no-failure        do not fail in case of no version change or release
   --nc-args <args>    extra arguments for newchanges, enclosed in quotes
+  -t|--tag-prefix <prefix> expect git tags prefixed (default: "v")
   -a|--assets <file>  files to upload as extra assets to the github release
   -b|--bump-files <file> extra files in which to bump the version
   -y|--yes            answer the push and reelase confirmations with "yes"
@@ -79,6 +80,7 @@ struct Opts {
 	archives        bool = true
 	failure         bool = true
 	nc_args         string   @[json: 'nc-args']
+	tag_prefix      string = 'v'   @[json: 'tag-prefix']
 	assets          []string
 	bump_files      []string @[json: 'bump-files'; split]
 	yes             bool

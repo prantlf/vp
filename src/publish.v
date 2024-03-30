@@ -23,7 +23,7 @@ fn publish(commit bool, tag bool, opts &Opts) ! {
 }
 
 fn get_last_version(opts &Opts) !(string, string) {
-	out := execute_opt('newchanges -iv ${opts.nc_args}', ExecuteOpts{
+	out := execute_opt('newchanges -iv -t "${opts.tag_prefix}" ${opts.nc_args}', ExecuteOpts{
 		trim_trailing_whitespace: true
 	})!
 	log := until_one_but_last_line_not_empty(out)
@@ -63,7 +63,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 		} else {
 			get_gh_token()!
 		}
-		if was_released(repo, token, ver)! {
+		if was_released(repo, token, ver, opts.tag_prefix)! {
 			msg := 'version ${ver} has been already released'
 			if opts.failure {
 				return error(msg)
@@ -84,7 +84,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 
 	if opts.push && (opts.yes || confirm('push version ${ver}${mode}')!) {
 		if !opts.dry_run {
-			out := execute('git push --atomic origin HEAD "v${ver}"')!
+			out := execute('git push --atomic origin HEAD "${opts.tag_prefix}${ver}"')!
 			d.log_str(out)
 			eprintln('')
 		}
@@ -100,7 +100,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 		}
 		if opts.yes || confirm('release version ${ver}${suffix}${mode}')! {
 			if !opts.dry_run {
-				post_release(repo_path, gh_token, ver, log, archives)!
+				post_release(repo_path, gh_token, ver, opts.tag_prefix, log, archives)!
 			}
 			if !opts.yes {
 				suffix = ''
@@ -110,12 +110,12 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 	}
 }
 
-fn was_released(repo string, token string, ver string) !bool {
-	return get_release(repo, token, 'v${ver}')!.len > 0
+fn was_released(repo string, token string, ver string, tag_prefix string) !bool {
+	return get_release(repo, token, '${tag_prefix}${ver}')!.len > 0
 }
 
-fn post_release(repo string, token string, ver string, log string, assets []string) ! {
-	body := create_release(repo, token, 'v${ver}', ver, log)!
+fn post_release(repo string, token string, ver string, tag_prefix string, log string, assets []string) ! {
+	body := create_release(repo, token, '${tag_prefix}${ver}', ver, log)!
 	params := parse(body)!.object()!
 	id := params['id']!.int()!
 	for asset in assets {
