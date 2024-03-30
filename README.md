@@ -52,6 +52,7 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       --no-tag            do not tag the commit during publishing
       --no-tag-skip-ci    do not add [skip ci] to the commit with the tag
       --no-push           do not push the commit and tag during publishing
+      --no-push-skip-ci   do not add -o ci.skip to the push with the changes
       --no-release        do not create a new github release
       --no-archives       do not upload platform archives automatically as assets
       --no-failure        do not fail in case of no version change or release

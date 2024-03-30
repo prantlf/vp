@@ -55,7 +55,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 		publish_package(ver, opts)!
 	}
 
-	repo_path, gh_token := if opts.release {
+	mut repo_path, gh_token := if opts.release {
 		path := find_git()!
 		repo := get_repo_path(path)!
 		token := if opts.gh_token.len > 0 {
@@ -89,7 +89,16 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 			} else {
 				' --no-verify'
 			}
-			out := execute('git push --atomic${no_verify} origin HEAD "${opts.tag_prefix}${ver}"')!
+			if repo_path.len == 0 {
+				git_path := find_git()!
+				repo_path = get_repo_path(git_path)!
+			}
+			push_skip_ci := if opts.push_skip_ci && is_gitlab(repo_path) {
+				' -o ci.skip'
+			} else {
+				''
+			}
+			out := execute('git push --atomic${no_verify}${push_skip_ci} origin HEAD "${opts.tag_prefix}${ver}"')!
 			d.log_str(out)
 			eprintln('')
 		}
