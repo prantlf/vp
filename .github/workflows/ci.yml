@@ -23,28 +23,28 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup V
       uses: prantlf/setup-v-action@v2
-    # - name: Bump version
-    #   id: bump
-    #   uses: prantlf/bump-version-action@v2
-    #   with:
-    #     bump-files: src/vp.v
-    # - name: Shelve changes
-    #   uses: prantlf/shelve-changes-action@v1
+    - name: Bump version
+      id: bump
+      uses: prantlf/bump-version-action@v2
+      with:
+        bump-files: src/vp.v
+    - name: Shelve changes
+      uses: prantlf/shelve-changes-action@v1
     - name: Build and Test
       run: make RELEASE=1
     - name: Shelve output
-      # if: ${{ steps.bump.outputs.bumped == 'true' }}
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
         extra: man
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-        asset_path: ./vp-linux-x64.zip
-        asset_name: vp-linux-x64.zip
-        asset_content_type: application/zip
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-linux-x64.zip
+    #     asset_name: vp-linux-x64.zip
+    #     asset_content_type: application/zip
     - name: Install ARM Cross-Compiler
       run: |
         sudo apt-get update
@@ -52,19 +52,19 @@ jobs:
     - name: Build ARM
       run: make build RELEASE=1 LINUX_ARM=1
     - name: Shelve output
-      # if: ${{ steps.bump.outputs.bumped == 'true' }}
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
         arch: arm64
         extra: man
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-        asset_path: ./vp-linux-arm64.zip
-        asset_name: vp-linux-arm64.zip
-        asset_content_type: application/zip
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-linux-arm64.zip
+    #     asset_name: vp-linux-arm64.zip
+    #     asset_content_type: application/zip
 
   macos:
     needs:
@@ -75,43 +75,43 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup V
       uses: prantlf/setup-v-action@v2
-    # - name: Unshelve changes
-    #   if: ${{ needs.linux.outputs.changed == 'true' }}
-    #   uses: prantlf/unshelve-changes-action@v1
-    #   with:
-    #     files: ${{ needs.linux.outputs.changed-files }}
-    #     discard-shelf: false
+    - name: Unshelve changes
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v1
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+        discard-shelf: false
     - name: Build and Test
       run: make RELEASE=1
     - name: Shelve output
-      # if: ${{ needs.linux.outputs.changed == 'true' }}
+      if: ${{ needs.linux.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
         extra: man
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-        asset_path: ./vp-macos-x64.zip
-        asset_name: vp-macos-x64.zip
-        asset_content_type: application/zip
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-macos-x64.zip
+    #     asset_name: vp-macos-x64.zip
+    #     asset_content_type: application/zip
     - name: Build ARM
       run: make build RELEASE=1 MACOS_ARM=1
     - name: Shelve output
-      # if: ${{ needs.linux.outputs.changed == 'true' }}
+      if: ${{ needs.linux.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
         arch: arm64
         extra: man
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-        asset_path: ./vp-macos-arm64.zip
-        asset_name: vp-macos-arm64.zip
-        asset_content_type: application/zip
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-macos-arm64.zip
+    #     asset_name: vp-macos-arm64.zip
+    #     asset_content_type: application/zip
 
   windows:
     needs:
@@ -122,29 +122,29 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup V
       uses: prantlf/setup-v-action@v2
-    # - name: Unshelve changes
-    #   if: ${{ needs.linux.outputs.changed == 'true' }}
-    #   uses: prantlf/unshelve-changes-action@v1
-    #   with:
-    #     files: ${{ needs.linux.outputs.changed-files }}
-    #     discard-shelf: false
+    - name: Unshelve changes
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v1
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+        discard-shelf: false
     - name: Install Cross-Compiler
       run: sudo apt-get install gcc-mingw-w64-x86-64
     - name: Build Windows
       run: make build RELEASE=1 WINDOWS=1
     - name: Shelve output
-      # if: ${{ needs.linux.outputs.changed == 'true' }}
+      if: ${{ needs.linux.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
         os: windows
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-        asset_path: ./vp-windows-x64.zip
-        asset_name: vp-windows-x64.zip
-        asset_content_type: application/zip
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-windows-x64.zip
+    #     asset_name: vp-windows-x64.zip
+    #     asset_content_type: application/zip
 
   # windows:
   #   needs:
@@ -191,8 +191,8 @@ jobs:
     needs:
       - linux
       - macos
-      # - windows
-    runs-on: ubuntu-latest
+      - windows
+    runs-on: macos-latest
     steps:
     - name: Checkout sources
       uses: actions/checkout@v4
