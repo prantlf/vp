@@ -188,6 +188,11 @@ fn get_name(opts &Opts) !string {
 	return cargo.value('package.name').string()
 }
 
+fn find_git_repo() !string {
+	git_path := find_git()!
+	return get_repo_path(git_path)!
+}
+
 fn is_github(repo string) bool {
 	return repo.contains('github')
 }

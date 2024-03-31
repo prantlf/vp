@@ -1,5 +1,5 @@
 import os { ls, read_file }
-import prantlf.github { create_release, find_git, get_gh_token, get_release, get_repo_path, upload_asset }
+import prantlf.github { create_release, get_gh_token, get_release, upload_asset }
 import prantlf.json { parse }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
@@ -56,22 +56,25 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 	}
 
 	mut repo_path, gh_token := if opts.release {
-		path := find_git()!
-		repo := get_repo_path(path)!
-		token := if opts.gh_token.len > 0 {
-			opts.gh_token
-		} else {
-			get_gh_token()!
-		}
-		if was_released(repo, token, ver, opts.tag_prefix)! {
-			msg := 'version ${ver} has been already released'
-			if opts.failure {
-				return error(msg)
+		repo := find_git_repo()!
+		if is_github(repo) {
+			token := if opts.gh_token.len > 0 {
+				opts.gh_token
+			} else {
+				get_gh_token()!
 			}
-			println(msg)
-			return
+			if was_released(repo, token, ver, opts.tag_prefix)! {
+				msg := 'version ${ver} has been already released'
+				if opts.failure {
+					return error(msg)
+				}
+				println(msg)
+				return
+			}
+			repo, token
+		} else {
+			repo, ''
 		}
-		repo, token
 	} else {
 		'', ''
 	}
@@ -89,12 +92,15 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 			} else {
 				' --no-verify'
 			}
-			if repo_path.len == 0 {
-				git_path := find_git()!
-				repo_path = get_repo_path(git_path)!
-			}
-			push_skip_ci := if opts.push_skip_ci && is_gitlab(repo_path) {
-				' -o ci.skip'
+			push_skip_ci := if opts.push_skip_ci {
+				if repo_path.len == 0 {
+					repo_path = find_git_repo()!
+				}
+				if is_gitlab(repo_path) {
+					' -o ci.skip'
+				} else {
+					''
+				}
 			} else {
 				''
 			}
@@ -106,20 +112,25 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 	}
 
 	if opts.release {
-		archives := collect_assets(opts)!
-		mut suffix := if archives.len > 0 {
-			' with ${archives.join(', ')}'
-		} else {
-			''
+		if repo_path.len == 0 {
+			repo_path = find_git_repo()!
 		}
-		if opts.yes || confirm('release version ${ver}${suffix}${mode}')! {
-			if !opts.dry_run {
-				post_release(repo_path, gh_token, ver, opts.tag_prefix, log, archives)!
+		if is_github(repo_path) {
+			archives := collect_assets(opts)!
+			mut suffix := if archives.len > 0 {
+				' with ${archives.join(', ')}'
+			} else {
+				''
 			}
-			if !opts.yes {
-				suffix = ''
+			if opts.yes || confirm('release version ${ver}${suffix}${mode}')! {
+				if !opts.dry_run {
+					post_release(repo_path, gh_token, ver, opts.tag_prefix, log, archives)!
+				}
+				if !opts.yes {
+					suffix = ''
+				}
+				println('released version ${ver}${suffix}${mode}')
 			}
-			println('released version ${ver}${suffix}${mode}')
 		}
 	}
 }
