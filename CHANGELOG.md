@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.1](https://github.com/prantlf/vp/compare/v0.14.0...v0.14.1) (2024-03-31)
+
+### Bug Fixes
+
+* Enable github releases only for github repositories ([733cd84](https://github.com/prantlf/vp/commit/733cd84c6f8c921a36fab5e92d74b6cdbb1cec0f))
+
 ## [0.14.0](https://github.com/prantlf/vp/compare/v0.13.0...v0.14.0) (2024-03-30)
 
 ### Features
