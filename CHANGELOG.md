@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.3](https://github.com/prantlf/vp/compare/v0.14.2...v0.14.3) (2024-04-02)
+
+### Bug Fixes
+
+* Reword the description of --pre-release ([de4f673](https://github.com/prantlf/vp/commit/de4f67383559f90ee471d371b17e62a4407850aa))
+
 ## [0.14.2](https://github.com/prantlf/vp/compare/v0.14.1...v0.14.2) (2024-04-02)
 
 ### Bug Fixes
