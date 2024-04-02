@@ -58,7 +58,7 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       --no-failure        do not fail in case of no version change or release
       --no-verify         append --no-verify to commit and push
       --nc-args <args>    extra arguments for newchanges, enclosed in quotes
-      --pre-release       bump the existing pre-release number
+      --pre-release       publish a pre-release, not a stable release
       --pre-id <id>       first pre-release identifier (default: "next")
       -0|--bump-major-0   bump the major version also if it is 0
       -t|--tag-prefix <prefix> expect git tags prefixed (default: "v")
