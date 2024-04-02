@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.4](https://github.com/prantlf/vp/compare/v0.14.3...v0.14.4) (2024-04-02)
+
+### Bug Fixes
+
+* Insert --no-verify before -am in git commit ([8854d50](https://github.com/prantlf/vp/commit/8854d50b329c36fc377b772da38b88133159f959))
+
 ## [0.14.3](https://github.com/prantlf/vp/compare/v0.14.2...v0.14.3) (2024-04-02)
 
 ### Bug Fixes
