@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.2](https://github.com/prantlf/vp/compare/v0.14.1...v0.14.2) (2024-04-02)
+
+### Bug Fixes
+
+* Correct recognition of GitHub and GitLab URLs ([17e3f0a](https://github.com/prantlf/vp/commit/17e3f0a178b547f1c45b02a26a623728fda25cb2))
+
 ## [0.14.1](https://github.com/prantlf/vp/compare/v0.14.0...v0.14.1) (2024-03-31)
 
 ### Bug Fixes
