@@ -1,5 +1,15 @@
 import os { ls, read_file }
-import prantlf.github { create_release, get_gh_token, get_release, upload_asset }
+import prantlf.github {
+	create_release,
+	cut_repo_path,
+	find_git,
+	get_gh_token,
+	get_release,
+	get_repo_url,
+	is_github,
+	is_gitlab,
+	upload_asset,
+}
 import prantlf.json { parse }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
@@ -55,9 +65,11 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 		publish_package(ver, opts)!
 	}
 
-	mut repo_path, gh_token := if opts.release {
-		repo := find_git_repo()!
-		if is_github(repo) {
+	mut repo_path, mut repo_url, gh_token := if opts.release {
+		git_path := find_git()!
+		git_url := get_repo_url(git_path)!
+		repo := cut_repo_path(git_url)!
+		if is_github(git_url) {
 			token := if opts.gh_token.len > 0 {
 				opts.gh_token
 			} else {
@@ -71,12 +83,12 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 				println(msg)
 				return
 			}
-			repo, token
+			repo, git_url, token
 		} else {
-			repo, ''
+			repo, git_url, ''
 		}
 	} else {
-		'', ''
+		'', '', ''
 	}
 
 	mode := if opts.dry_run {
@@ -93,10 +105,10 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 				' --no-verify'
 			}
 			push_skip_ci := if opts.push_skip_ci {
-				if repo_path.len == 0 {
-					repo_path = find_git_repo()!
+				if repo_url.len == 0 {
+					repo_url = find_git_url()!
 				}
-				if is_gitlab(repo_path) {
+				if is_gitlab(repo_url) {
 					' -o ci.skip'
 				} else {
 					''
@@ -112,10 +124,10 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 	}
 
 	if opts.release {
-		if repo_path.len == 0 {
-			repo_path = find_git_repo()!
+		if repo_url.len == 0 {
+			repo_url = find_git_url()!
 		}
-		if is_github(repo_path) {
+		if is_github(repo_url) {
 			archives := collect_assets(opts)!
 			mut suffix := if archives.len > 0 {
 				' with ${archives.join(', ')}'

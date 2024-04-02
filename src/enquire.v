@@ -2,7 +2,7 @@ import os { exists, join_path_single, vmodules_dir }
 import toml { parse_file }
 import v.vmod
 import prantlf.debug { new_debug }
-import prantlf.github { find_git, get_repo_path }
+import prantlf.github { find_git, get_repo_path, get_repo_url }
 
 const d = new_debug('vp')
 
@@ -193,10 +193,7 @@ fn find_git_repo() !string {
 	return get_repo_path(git_path)!
 }
 
-fn is_github(repo string) bool {
-	return repo.contains('github')
-}
-
-fn is_gitlab(repo string) bool {
-	return repo.contains('gitlab')
+fn find_git_url() !string {
+	git_path := find_git()!
+	return get_repo_url(git_path)!
 }
