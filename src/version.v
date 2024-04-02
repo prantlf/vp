@@ -137,7 +137,7 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 		} else {
 			' --no-verify'
 		}
-		mut out := execute('git commit -am${no_verify} "${ver}${commit_skip_ci}"')!
+		mut out := execute('git commit${no_verify} -am "${ver}${commit_skip_ci}"')!
 		d.log_str(out)
 		eprintln('')
 
