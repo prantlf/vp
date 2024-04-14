@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.6](https://github.com/prantlf/vp/compare/v0.14.5...v0.14.6) (2024-04-14)
+
+### Bug Fixes
+
+* Work around with --bump-major-0 instead of -0 ([a11c22a](https://github.com/prantlf/vp/commit/a11c22a5182e1374d30dd40e9dc6cf938a927c8a))
+
 ## [0.14.5](https://github.com/prantlf/vp/compare/v0.14.4...v0.14.5) (2024-04-14)
 
 ### Bug Fixes
