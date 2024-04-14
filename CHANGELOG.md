@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.5](https://github.com/prantlf/vp/compare/v0.14.4...v0.14.5) (2024-04-14)
+
+### Bug Fixes
+
+* Pass bump-major-0 to newchanges ([2a70724](https://github.com/prantlf/vp/commit/2a707244ab013c209473fe5f587c97aba51942dd))
+
 ## [0.14.4](https://github.com/prantlf/vp/compare/v0.14.3...v0.14.4) (2024-04-02)
 
 ### Bug Fixes
