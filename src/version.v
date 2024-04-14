@@ -36,7 +36,7 @@ fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, s
 			extra_args += ' --pre-id "${opts.pre_id}"'
 		}
 		if opts.bump_major_0 {
-			extra_args += ' -0'
+			extra_args += ' --bump-major-0'
 		}
 		if opts.nc_args.len > 0 {
 			extra_args += ' ${opts.nc_args}'
