@@ -10,8 +10,8 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 		return
 	}
 
-	d.log('setting package version to "%s"', ver)
 	pkg := read_json(pkg_file)!
+	d.log('setting package version to "%s"', ver)
 	pkg.object()!['version'] = ver
 
 	lck_file := join_path_single(pkg_dir, 'package-lock.json')
@@ -19,14 +19,24 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 	mut lck := any_null()
 	if lck_is {
 		lck = read_json(lck_file)!
+		d.log('setting package lock version to "%s"', ver)
 		lck.object()!['version'] = ver
 		lck.set('packages."".version', Any(ver))!
 	}
 
 	if !opts.dry_run {
+		d.log_str('stringifying package.json')
+		text := stringify_opt(pkg, &StringifyOpts{ pretty: true })
+		if d.is_enabled() {
+			len := if text.len > 250 {
+				250
+			} else {
+				text.len
+			}
+			d.log_str(text[0..len])
+		}
 		dpkg_file := d.rwd(pkg_file)
 		d.log('writing file "%s"', dpkg_file)
-		text := stringify_opt(pkg, &StringifyOpts{ pretty: true })
 		write_file(pkg_file, text)!
 
 		if lck_is {
@@ -152,6 +162,15 @@ fn read_json(file string) !Any {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	text := read_file(file)!
+	if d.is_enabled() {
+		len := if text.len > 250 {
+			250
+		} else {
+			text.len
+		}
+		d.log_str(text[0..len])
+	}
+	d.log_str('parsing package.json')
 	return parse(text)!
 }
 
