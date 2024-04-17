@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.8](https://github.com/prantlf/vp/compare/v0.14.7...v0.14.8) (2024-04-17)
+
+### Bug Fixes
+
+* Rebuild with newer dependencies ([8551afe](https://github.com/prantlf/vp/commit/8551afec67bdd9dbbcc53c2809d6dd7249046484))
+
 ## [0.14.7](https://github.com/prantlf/vp/compare/v0.14.6...v0.14.7) (2024-04-17)
 
 ### Bug Fixes
