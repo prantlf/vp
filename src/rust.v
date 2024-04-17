@@ -10,13 +10,13 @@ fn set_cargo_version(ver string, pkg_dir string, opts &Opts) ! {
 	}
 	mut cargo_version := false
 
-	mut cargo_lines := rad_lines_from_file(cargo_file)!
+	mut cargo_lines := read_lines_from_file(cargo_file)!
 	lck_file := join_path_single(pkg_dir, 'Cargo.lock')
 	lck_is := exists(lck_file)
 	mut lck_lines := []string{}
 	mut lck_version := false
 	if lck_is {
-		lck_lines = rad_lines_from_file(lck_file)!
+		lck_lines = read_lines_from_file(lck_file)!
 	}
 
 	d.log('setting cargo version to "%s"', version)
@@ -79,7 +79,7 @@ fn find_cargo() !(string, string) {
 	return find_file('Cargo.toml') or { error('Cargo.toml not found') }
 }
 
-fn rad_lines_from_file(file string) ![]string {
+fn read_lines_from_file(file string) ![]string {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	lines := read_lines(file)!
