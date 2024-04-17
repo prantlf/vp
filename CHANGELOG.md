@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.7](https://github.com/prantlf/vp/compare/v0.14.6...v0.14.7) (2024-04-17)
+
+### Bug Fixes
+
+* Log parsing and stringifying package.json and lock ([b627a12](https://github.com/prantlf/vp/commit/b627a12e776a54a3dd4543e048e4e67ee316cb86))
+
 ## [0.14.6](https://github.com/prantlf/vp/compare/v0.14.5...v0.14.6) (2024-04-14)
 
 ### Bug Fixes
