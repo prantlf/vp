@@ -1,5 +1,11 @@
 # Changes
 
+## [0.14.9](https://github.com/prantlf/vp/compare/v0.14.8...v0.14.9) (2024-04-28)
+
+### Bug Fixes
+
+* Add missing linux-arm64 package ([b569867](https://github.com/prantlf/vp/commit/b56986709f6d475b847777b2e1d33ec30687aae8))
+
 ## [0.14.8](https://github.com/prantlf/vp/compare/v0.14.7...v0.14.8) (2024-04-17)
 
 ### Bug Fixes
