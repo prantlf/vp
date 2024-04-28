@@ -50,9 +50,6 @@ jobs:
     needs:
       - linux
     runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.bump.outputs.bumped }}
-      changed-files: ${{ steps.bump.outputs.changed-files }}
     steps:
     - name: Checkout Sources
       uses: actions/checkout@v4
@@ -71,7 +68,7 @@ jobs:
     - name: Build ARM
       run: make build RELEASE=1 LINUX_ARM=1
     - name: Shelve output
-      if: ${{ steps.bump.outputs.bumped == 'true' }}
+      if: ${{ needs.linux.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v2
       with:
         arch: arm64
