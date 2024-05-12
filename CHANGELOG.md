@@ -1,5 +1,11 @@
 # Changes
 
+## [0.15.0](https://github.com/prantlf/vp/compare/v0.14.9...v0.15.0) (2024-05-12)
+
+### Features
+
+* Support go modules ([fae6506](https://github.com/prantlf/vp/commit/fae6506b8b04ab0b02e2d40973297d3bb1618d35))
+
 ## [0.14.9](https://github.com/prantlf/vp/compare/v0.14.8...v0.14.9) (2024-04-28)
 
 ### Bug Fixes
