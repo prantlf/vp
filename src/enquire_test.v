@@ -2,12 +2,13 @@ module main
 
 import os { chdir, getwd }
 
-fn test_find_manifest_or_package_or_cargo() {
+fn test_find_package_file() {
 	cwd := getwd()
-	vlang, node, rust, mod_dir := find_manifest_or_package_or_cargo(Opts{})
+	vlang, node, rust, golang, mod_dir := find_package_file(Opts{})
 	assert vlang == true
 	assert node == false
 	assert rust == false
+	assert golang == false
 	assert mod_dir == cwd
 }
 
@@ -40,7 +41,14 @@ fn test_get_name_package() {
 
 fn test_get_name_cargo() {
 	chdir('scripts')!
-	name := get_name(Opts{ vlang: false, node: false })!
+	name := get_name(Opts{ vlang: false, node: false, golang: false })!
 	chdir('..')!
 	assert name == 'cargo'
+}
+
+fn test_get_name_gomod() {
+	chdir('.github')!
+	name := get_name(Opts{ vlang: false, node: false, rust: false })!
+	chdir('..')!
+	assert name == 'gomod'
 }

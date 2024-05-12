@@ -12,9 +12,9 @@ const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0
 	0)!
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
-	vlang, node, rust, vmod_dir := find_manifest_or_package_or_cargo(opts)
+	vlang, node, rust, _, vmod_dir := find_package_file(opts)
 	if vmod_dir.len == 0 && (!opts.changes || opts.bump) {
-		return error('neither v.mod nor package.json nor Cargo.toml was found')
+		return error('neither v.mod nor package.json nor Cargo.toml nor go.mod was found')
 	}
 
 	mode := if opts.dry_run {

@@ -18,9 +18,9 @@ fn publish(commit bool, tag bool, opts &Opts) ! {
 	ver, log := if opts.release {
 		get_last_version(opts)!
 	} else {
-		_, _, _, vmod_dir := find_manifest_or_package_or_cargo(opts)
+		_, _, _, _, vmod_dir := find_package_file(opts)
 		if vmod_dir.len == 0 {
-			return error('neither v.mod nor package.json nor Carego.toml was found')
+			return error('neither v.mod nor package.json nor Carego.toml nor go.mod was found')
 		}
 		get_current_version(vmod_dir)!, ''
 	}

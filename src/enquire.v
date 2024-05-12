@@ -84,7 +84,7 @@ fn analyse_module(force bool) !(string, string, string, vmod.Manifest) {
 	return scope, manifest.name, vmod_dir, manifest
 }
 
-fn find_manifest_or_package_or_cargo(opts &Opts) (bool, bool, bool, string) {
+fn find_package_file(opts &Opts) (bool, bool, bool, bool, string) {
 	vdir := if opts.vlang {
 		v, _ := find_manifest() or { '', '' }
 		v
@@ -124,14 +124,32 @@ fn find_manifest_or_package_or_cargo(opts &Opts) (bool, bool, bool, string) {
 		''
 	}
 
-	return if vdir.len != 0 {
-		true, ndir.len != 0, cdir.len != 0, vdir
-	} else if ndir.len != 0 {
-		false, true, cdir.len != 0, ndir
-	} else if cdir.len != 0 {
-		false, false, true, cdir
+	gdir := if opts.golang {
+		if vdir.len != 0 {
+			gomod_file := join_path_single(vdir, 'go.mod')
+			if exists(gomod_file) {
+				vdir
+			} else {
+				''
+			}
+		} else {
+			n, _ := find_gomod() or { '', '' }
+			n
+		}
 	} else {
-		false, false, false, ''
+		''
+	}
+
+	return if vdir.len != 0 {
+		true, ndir.len != 0, cdir.len != 0, gdir.len != 0, vdir
+	} else if ndir.len != 0 {
+		false, true, cdir.len != 0, gdir.len != 0, ndir
+	} else if cdir.len != 0 {
+		false, false, true, gdir.len != 0, cdir
+	} else if gdir.len != 0 {
+		false, false, false, true, gdir
+	} else {
+		false, false, false, false, ''
 	}
 }
 
@@ -158,13 +176,19 @@ fn get_current_version(vmod_dir string) !string {
 		return cargo.value('package.version').string()
 	}
 
-	return error('neither v.mod nor package.json nor Cargo.toml was found')
+	gomod_file := join_path_single(vmod_dir, 'go.mod')
+	if exists(gomod_file) {
+		// TODO: Find the version of a go module.
+		return ''
+	}
+
+	return error('neither v.mod nor package.json nor Cargo.toml nor go.mod was found')
 }
 
 fn get_name(opts &Opts) !string {
-	vlang, node, _, vmod_dir := find_manifest_or_package_or_cargo(opts)
+	vlang, node, rust, _, vmod_dir := find_package_file(opts)
 	if vmod_dir.len == 0 {
-		return error('neither v.mod nor package.json nor Cargo.toml was found')
+		return error('neither v.mod nor package.json nor Cargo.toml nor go.mod was found')
 	}
 
 	if vlang {
@@ -183,9 +207,14 @@ fn get_name(opts &Opts) !string {
 		}
 	}
 
-	cargo_file := join_path_single(vmod_dir, 'Cargo.toml')
-	cargo := parse_file(cargo_file)!
-	return cargo.value('package.name').string()
+	if rust {
+		cargo_file := join_path_single(vmod_dir, 'Cargo.toml')
+		cargo := parse_file(cargo_file)!
+		return cargo.value('package.name').string()
+	}
+
+	gomod_file := join_path_single(vmod_dir, 'go.mod')
+	return read_gomod_name(gomod_file)!
 }
 
 fn find_git_repo() !string {
