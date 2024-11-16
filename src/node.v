@@ -12,7 +12,8 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 
 	pkg := read_json(pkg_file)!
 	d.log('setting package version to "%s"', ver)
-	pkg.object()!['version'] = ver
+	mut root := pkg.object()!
+	root['version'] = ver
 
 	lck_file := join_path_single(pkg_dir, 'package-lock.json')
 	lck_is := exists(lck_file)
@@ -20,7 +21,8 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 	if lck_is {
 		lck = read_json(lck_file)!
 		d.log('setting package lock version to "%s"', ver)
-		lck.object()!['version'] = ver
+		mut lckroot := lck.object()!
+		lckroot['version'] = ver
 		lck.set('packages."".version', Any(ver))!
 	}
 

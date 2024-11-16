@@ -11,7 +11,7 @@ fn read_gomod_name(file string) !string {
 	lines := read_lines(file)!
 	if lines.len > 0 {
 		line := lines[0]
-		last_slash := line.index_u8_last(`/`)
+		last_slash := line.last_index_u8(`/`)
 		if last_slash > 0 {
 			return line[last_slash + 1..]
 		}

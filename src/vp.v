@@ -88,31 +88,31 @@ struct Opts {
 	archives        bool = true
 	failure         bool = true
 	verify          bool = true
-	nc_args         string   @[json: 'nc-args']
-	bump_major_0    bool     @[json: 'bump-major-0']
-	pre_release     bool     @[json: 'pre-release']
-	pre_id          string     = 'next'   @[json: 'pre-id']
-	tag_prefix      string = 'v'   @[json: 'tag-prefix']
+	nc_args         string @[json: 'nc-args']
+	bump_major_0    bool   @[json: 'bump-major-0']
+	pre_release     bool   @[json: 'pre-release']
+	pre_id          string = 'next' @[json: 'pre-id']
+	tag_prefix      string = 'v' @[json: 'tag-prefix']
 	assets          []string
 	bump_files      []string @[json: 'bump-files'; split]
 	yes             bool
-	dry_run         bool     @[json: 'dry-run']
+	dry_run         bool @[json: 'dry-run']
 	verbose         bool
-	version_detect  string  = r'version'   @[json: 'version-detect']
-	version_replace string = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[.0-9A-Za-z-]+)?'   @[json: 'version-replace']
-	gh_token        string   @[json: 'gh-token']
-	npm_token       string   @[json: 'npm-token']
+	version_detect  string = r'version' @[json: 'version-detect']
+	version_replace string = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[.0-9A-Za-z-]+)?' @[json: 'version-replace']
+	gh_token        string @[json: 'gh-token']
+	npm_token       string @[json: 'npm-token']
 }
 
 fn main() {
 	run(Cli{
-		usage: usage
-		version: version
+		usage:            usage
+		version:          version
 		options_anywhere: true
-		cfg_opt: 'c'
-		cfg_gen_arg: 'init'
-		cfg_file: '.vp'
-		env: Env.both
+		cfg_opt:          'c'
+		cfg_gen_arg:      'init'
+		cfg_file:         '.vp'
+		env:              Env.both
 	}, body)
 }
 

@@ -23,14 +23,14 @@ echo "clean up"
 rm -rf "$LINK"
 
 test "link" 1
-./vp link
+./vp link prantlf.vp
 if [ ! -L "$LINK" ]; then
   echo "link not created"
   exit 1
 fi
 
 test "unlink" 1
-./vp unlink
+./vp unlink prantlf.vp
 if [ -L "$LINK" ]; then
   echo "link not removed"
   exit 1

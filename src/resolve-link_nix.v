@@ -1,13 +1,13 @@
 import os { last_error }
 import prantlf.debug { rwd }
 
-fn C.readlink(pathname &char, buf &char, bufsiz usize) int
+fn C.readlink(pathname &char, buf &char, bufsize usize) int
 
 fn resolve_link(path string) !string {
 	dpath := d.rwd(path)
 	d.log('resolving the link "%s"', dpath)
 	mut result := [os.max_path_len + 1]u8{}
-	len := C.readlink(path.str, &result[0], os.max_path_len)
+	len := C.readlink(&char(path.str), &char(&result[0]), os.max_path_len)
 	if len < 0 {
 		return error('resolving the link "${rwd(path)}" failed: ${last_error()}')
 	}

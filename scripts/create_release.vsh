@@ -17,8 +17,8 @@ fn main() {
 	println(data)
 	mut req := Request{
 		method: .post
-		url: url
-		data: data
+		url:    url
+		data:   data
 	}
 	req.add_header(.accept, 'application/vnd.github+json')
 	req.add_header(.authorization, 'Bearer ${token}')

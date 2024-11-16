@@ -33,7 +33,7 @@ fn get_link(forced_name string, force bool) !(string, string) {
 		full_name = forced_name
 	}
 	if full_name.len == 0 {
-		return error('the package name cannot be inferred fron the git configuration - if you want to continue, enter one explicitly and force the operation')
+		return error('the package name cannot be inferred from the git configuration - if you want to continue, enter one explicitly and force the operation')
 	}
 
 	link_path := join_path_single(vmodules_dir(), full_name.replace('.', os.path_separator))
