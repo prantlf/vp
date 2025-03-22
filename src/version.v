@@ -13,7 +13,7 @@ const re_verline = pcre_compile(r'^version ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0
 
 fn create_version(version string, commit bool, tag bool, opts &Opts) !(string, string) {
 	vlang, node, rust, _, vmod_dir := find_package_file(opts)
-	if vmod_dir.len == 0 && (!opts.changes || opts.bump) {
+	if vmod_dir == '' && (!opts.changes || opts.bump) {
 		return error('neither v.mod nor package.json nor Cargo.toml nor go.mod was found')
 	}
 
@@ -109,7 +109,7 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 				trim_trailing_whitespace: true
 			})!
 			d.log_str(out)
-			if out.len > 0 {
+			if out != '' {
 				msg := 'tag ${tagver} already exists'
 				if opts.failure {
 					return error(msg)
@@ -168,19 +168,19 @@ fn do_commit(ver string, commit bool, tag bool, opts &Opts) ! {
 }
 
 fn get_next_version(new_ver string, vmod_dir string, pre_id string, bump_major_0 bool) !string {
-	if new_ver.len == 0 {
+	if new_ver == '' {
 		return error('updating the changelog was disabled, specify the new version on the command line')
 	}
 
 	ver := get_current_version(vmod_dir)!
 	return if new_ver == 'pre' {
-		if ver.len == 0 {
+		if ver == '' {
 			return error('package manifest contains no version')
 		}
 		orig_ver := semver.from(ver)!
 		next_prerelease(orig_ver, pre_id).str()
 	} else if mut increment := get_increment(new_ver) {
-		if ver.len == 0 {
+		if ver == '' {
 			return error('package manifest contains no version')
 		}
 		orig_ver := semver.from(ver)!

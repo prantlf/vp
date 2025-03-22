@@ -109,7 +109,7 @@ fn authenticate(opts &Opts) !(bool, string, []string) {
 		return false, '', []string{}
 	}
 
-	token := if opts.npm_token.len > 0 {
+	token := if opts.npm_token != '' {
 		opts.npm_token
 	} else {
 		get_npm_token()!
@@ -147,7 +147,7 @@ fn set_auth_token(file string, lines []string, token string) ! {
 	for line in lines {
 		out.writeln(line)!
 	}
-	if token.len > 0 {
+	if token != '' {
 		out.write_string('//registry.npmjs.org/:_authToken=')!
 		out.writeln(token)!
 	}

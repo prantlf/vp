@@ -49,8 +49,8 @@ fn list(names []string) ! {
 	}
 	expand_modules(gmdir, mut listed)!
 
-	mut name := if scope.len > 0 { '${scope}.${manifest.name}' } else { manifest.name }
-	if manifest.version.len > 0 {
+	mut name := if scope != '' { '${scope}.${manifest.name}' } else { manifest.name }
+	if manifest.version != '' {
 		name += '@${manifest.version}'
 	}
 	print_modules(name, listed)!
@@ -77,7 +77,7 @@ fn list_modules(scope string, mdir string, names []string, mut listed []Module) 
 
 	scopes_or_names := if names.len == 0 {
 		names
-	} else if scope.len > 0 {
+	} else if scope != '' {
 		get_only_names(names, scope)
 	} else {
 		get_scopes_and_names(names)
@@ -92,7 +92,7 @@ fn list_modules(scope string, mdir string, names []string, mut listed []Module) 
 		}
 	}
 
-	if scope.len == 0 {
+	if scope == '' {
 		for name in names {
 			if !contains_module(listed, name) {
 				return error('"${name}" not found')
@@ -135,7 +135,7 @@ fn collect_module(scope string, name string, dir string, names []string, mut lis
 		return
 	}
 
-	full_name := if scope.len > 0 { '${scope}.${name}' } else { name }
+	full_name := if scope != '' { '${scope}.${name}' } else { name }
 	add_module(full_name, dir, vmod_name, mut listed, true)!
 }
 
@@ -192,7 +192,7 @@ fn get_only_names(names []string, scope string) []string {
 	mut only_names := []string{cap: names.len}
 	for name in names {
 		dot := name.index_u8(`.`)
-		if scope.len > 0 {
+		if scope != '' {
 			if dot > 0 && scope == name[..dot] {
 				only_names << name[dot + 1..]
 			}
@@ -275,7 +275,7 @@ fn print_deps(mod &Module, listed []Module, indent string) ! {
 fn print_line(prefix string, mod &Module) {
 	mut line := prefix
 	line += mod.name
-	if mod.version.len > 0 {
+	if mod.version != '' {
 		line += '@${mod.version}'
 	}
 	line += ' "${mod.path}"'

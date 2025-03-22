@@ -19,12 +19,12 @@ fn publish(commit bool, tag bool, opts &Opts) ! {
 		get_last_version(opts)!
 	} else {
 		_, _, _, _, vmod_dir := find_package_file(opts)
-		if vmod_dir.len == 0 {
+		if vmod_dir == '' {
 			return error('neither v.mod nor package.json nor Carego.toml nor go.mod was found')
 		}
 		get_current_version(vmod_dir)!, ''
 	}
-	if ver.len > 0 {
+	if ver != '' {
 		if commit {
 			do_commit(ver, commit, tag, opts)!
 		}
@@ -70,7 +70,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 		git_url := get_repo_url(git_path)!
 		repo := cut_repo_path(git_url)!
 		if is_github(git_url) {
-			token := if opts.gh_token.len > 0 {
+			token := if opts.gh_token != '' {
 				opts.gh_token
 			} else {
 				get_gh_token()!
@@ -105,7 +105,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 				' --no-verify'
 			}
 			push_skip_ci := if opts.push_skip_ci {
-				if repo_url.len == 0 {
+				if repo_url == '' {
 					repo_url = find_git_url()!
 				}
 				if is_gitlab(repo_url) {
@@ -124,7 +124,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 	}
 
 	if opts.release {
-		if repo_url.len == 0 {
+		if repo_url == '' {
 			repo_url = find_git_url()!
 		}
 		if is_github(repo_url) {
@@ -148,7 +148,7 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 }
 
 fn was_released(repo string, token string, ver string, tag_prefix string) !bool {
-	return get_release(repo, token, '${tag_prefix}${ver}')!.len > 0
+	return get_release(repo, token, '${tag_prefix}${ver}')! != ''
 }
 
 fn post_release(repo string, token string, ver string, tag_prefix string, log string, assets []string) ! {
@@ -167,12 +167,13 @@ fn collect_assets(opts &Opts) ![]string {
 		prefix := '${name}-'
 		d.log_str('listing files in the current directory')
 		files := ls('.')!
-		filtered := files.filter((it.ends_with('-arm64.zip') || it.ends_with('-x64.zip'))
+		mut filtered := files.filter((it.ends_with('-arm64.zip') || it.ends_with('-x64.zip'))
 			&& it.starts_with(prefix))
 		d.log('filtered %d archives from %d files', filtered.len, files.len)
 		filtered
 	} else {
-		[]string{cap: opts.assets.len}
+		mut filtered := []string{cap: opts.assets.len}
+		filtered
 	}
 	archives << opts.assets
 	return archives

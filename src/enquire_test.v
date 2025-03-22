@@ -14,7 +14,7 @@ fn test_find_package_file() {
 
 fn test_get_current_version_manifest() {
 	ver := get_current_version('.')!
-	assert ver.len > 0
+	assert ver != ''
 }
 
 fn test_get_current_version_package() {

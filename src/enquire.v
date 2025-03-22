@@ -10,7 +10,7 @@ const hint = ' - if you want to continue, specify the package name and force the
 
 fn get_link(forced_name string, force bool) !(string, string) {
 	scope, name, module_dir, _ := analyse_module(force)!
-	mut full_name := if name.len > 0 {
+	mut full_name := if name != '' {
 		if scope == 'vlang' {
 			name
 		} else {
@@ -21,8 +21,8 @@ fn get_link(forced_name string, force bool) !(string, string) {
 	}
 	d.log('inferred "%s" as the package name', full_name)
 
-	if forced_name.len > 0 {
-		if full_name.len > 0 && forced_name != full_name {
+	if forced_name != '' {
+		if full_name != '' && forced_name != full_name {
 			if force {
 				d.log('the entered package name "%s" differs from the inferred one "%s"',
 					forced_name, full_name)
@@ -32,7 +32,7 @@ fn get_link(forced_name string, force bool) !(string, string) {
 		}
 		full_name = forced_name
 	}
-	if full_name.len == 0 {
+	if full_name == '' {
 		return error('the package name cannot be inferred from the git configuration - if you want to continue, enter one explicitly and force the operation')
 	}
 
@@ -187,7 +187,7 @@ fn get_current_version(vmod_dir string) !string {
 
 fn get_name(opts &Opts) !string {
 	vlang, node, rust, _, vmod_dir := find_package_file(opts)
-	if vmod_dir.len == 0 {
+	if vmod_dir == '' {
 		return error('neither v.mod nor package.json nor Cargo.toml nor go.mod was found')
 	}
 
