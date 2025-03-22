@@ -1,5 +1,16 @@
 # Changes
 
+## [0.16.0](https://github.com/prantlf/vp/compare/v0.15.1...v0.16.0) (2025-03-22)
+
+### Features
+
+* Add RISC-V build ([c9b92f3](https://github.com/prantlf/vp/commit/c9b92f3cdba616f59389d1bd8c8079282ea23402))
+
+### Bug Fixes
+
+* Adapt to breaking changes in the V compiler ([5b5ba6d](https://github.com/prantlf/vp/commit/5b5ba6dbc5d260557647b6700fb850044693a29a))
+* Cast integer as the new V compiler requires ([f16f921](https://github.com/prantlf/vp/commit/f16f92102cb46964b9cd879e76b57769049d8be2))
+
 ## [0.15.1](https://github.com/prantlf/vp/compare/v0.15.0...v0.15.1) (2024-11-16)
 
 ### Bug Fixes
