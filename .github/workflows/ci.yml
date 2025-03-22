@@ -71,6 +71,29 @@ jobs:
     #     asset_name: vp-linux-arm64.zip
     #     asset_content_type: application/zip
 
+  linux-riscv:
+    if: ${{ github.ref_name == 'master' && needs.linux.outputs.changed == 'true' }}
+    needs:
+      - linux
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: prantlf/setup-v-action@v2
+    - uses: prantlf/unshelve-changes-action@v2
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+        discard-shelf: false
+    - run: |
+        sudo apt-get update
+        sudo apt-get install gcc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu
+    - run: make build RELEASE=1 LINUX_RISCV=1
+    - uses: prantlf/shelve-output-action@v3
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      with:
+        arch: riscv64
+        extra: man
+
   macos:
     needs:
       - linux
@@ -205,6 +228,7 @@ jobs:
     needs:
       - linux
       - linux-arm
+      - linux-riscv
       - macos
       - macos-arm
       - windows
