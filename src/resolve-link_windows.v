@@ -63,7 +63,7 @@ fn resolve_link(path string) !string {
 	length := data.SubstituteNameLength / sizeof(u16)
 	offset := data.SubstituteNameOffset / sizeof(u16)
 	link_path := unsafe {
-		string_from_wide2(&data.PathBuffer + offset, length)
+		string_from_wide2(&data.PathBuffer + offset, int(length))
 	}
 	dlink_path := d.rwd(link_path)
 	d.log('resolved to "%s"', dlink_path)
