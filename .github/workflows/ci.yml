@@ -65,7 +65,7 @@ jobs:
       with:
         files: ${{ needs.macos.outputs.changed-files }}
         discard-shelf: false
-    - run: make build RELEASE=1
+    - run: make build
     - if: ${{ needs.macos.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v3
       with:
