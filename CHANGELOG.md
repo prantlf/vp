@@ -1,5 +1,11 @@
 # Changes
 
+## [0.17.1](https://github.com/prantlf/vp/compare/v0.17.0...v0.17.1) (2025-03-23)
+
+### Bug Fixes
+
+* Remove unused build configurations ([7019577](https://github.com/prantlf/vp/commit/701957705d8d19bdd024e107d32d6ed0524c4af0))
+
 ## [0.17.0](https://github.com/prantlf/vp/compare/v0.16.0...v0.17.0) (2025-03-23)
 
 ### Features
