@@ -167,8 +167,8 @@ fn collect_assets(opts &Opts) ![]string {
 		prefix := '${name}-'
 		d.log_str('listing files in the current directory')
 		files := ls('.')!
-		mut filtered := files.filter((it.ends_with('-arm64.zip') || it.ends_with('-x64.zip'))
-			&& it.starts_with(prefix))
+		mut filtered := files.filter((it.ends_with('-arm64.zip') || it.ends_with('-riscv64.zip')
+			|| it.ends_with('-x64.zip')) && it.starts_with(prefix))
 		d.log('filtered %d archives from %d files', filtered.len, files.len)
 		filtered
 	} else {
