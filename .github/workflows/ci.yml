@@ -13,8 +13,8 @@ on:
 
 jobs:
 
-  linux:
-    runs-on: ubuntu-latest
+  macos:
+    runs-on: macos-13
     outputs:
       changed: ${{ steps.bump.outputs.bumped }}
       changed-files: ${{ steps.bump.outputs.changed-files }}
@@ -26,88 +26,8 @@ jobs:
       with:
         bump-files: src/vp.v
     - uses: prantlf/shelve-changes-action@v1
-    - run: make check build RELEASE=1
+    - run: make RELEASE=1
     - if: ${{ steps.bump.outputs.bumped == 'true' }}
-      uses: prantlf/shelve-output-action@v3
-      with:
-        extra: man
-    # - uses: actions/upload-release-asset@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-    #     asset_path: ./vp-linux-x64.zip
-    #     asset_name: vp-linux-x64.zip
-    #     asset_content_type: application/zip
-
-  linux-arm:
-    if: ${{ github.ref_name == 'master' && needs.linux.outputs.changed == 'true' }}
-    needs:
-      - linux
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: prantlf/setup-v-action@v2
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
-      uses: prantlf/unshelve-changes-action@v2
-      with:
-        files: ${{ needs.linux.outputs.changed-files }}
-        discard-shelf: false
-    - run: |
-        sudo apt-get update
-        sudo apt-get install gcc gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-    - run: make build RELEASE=1 LINUX_ARM=1
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
-      uses: prantlf/shelve-output-action@v3
-      with:
-        arch: arm64
-        extra: man
-    # - uses: actions/upload-release-asset@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
-    #     asset_path: ./vp-linux-arm64.zip
-    #     asset_name: vp-linux-arm64.zip
-    #     asset_content_type: application/zip
-
-  linux-riscv:
-    if: ${{ github.ref_name == 'master' && needs.linux.outputs.changed == 'true' }}
-    needs:
-      - linux
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: prantlf/setup-v-action@v2
-    - uses: prantlf/unshelve-changes-action@v2
-      if: ${{ needs.linux.outputs.changed == 'true' }}
-      with:
-        files: ${{ needs.linux.outputs.changed-files }}
-        discard-shelf: false
-    - run: |
-        sudo apt-get update
-        sudo apt-get install gcc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu
-    - run: make build RELEASE=1 LINUX_RISCV=1
-    - uses: prantlf/shelve-output-action@v3
-      if: ${{ needs.linux.outputs.changed == 'true' }}
-      with:
-        arch: riscv64
-        extra: man
-
-  macos:
-    needs:
-      - linux
-    runs-on: macos-13
-    steps:
-    - uses: actions/checkout@v4
-    - uses: prantlf/setup-v-action@v2
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
-      uses: prantlf/unshelve-changes-action@v2
-      with:
-        files: ${{ needs.linux.outputs.changed-files }}
-        discard-shelf: false
-    - run: make build test RELEASE=1
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v3
       with:
         extra: man
@@ -120,7 +40,7 @@ jobs:
     #     asset_name: vp-macos-x64.zip
     #     asset_content_type: application/zip
     # - run: make build RELEASE=1 MACOS_ARM=1
-    # - if: ${{ needs.linux.outputs.changed == 'true' }}
+    # - if: ${{ needs.macos.outputs.changed == 'true' }}
     #   uses: prantlf/shelve-output-action@v3
     #   with:
     #     arch: arm64
@@ -135,20 +55,20 @@ jobs:
     #     asset_content_type: application/zip
 
   macos-arm:
-    if: ${{ github.ref_name == 'master' && needs.linux.outputs.changed == 'true' }}
+    if: ${{ github.ref_name == 'master' && needs.macos.outputs.changed == 'true' }}
     needs:
-      - linux
+      - macos
     runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
     - uses: prantlf/setup-v-action@v2
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
       uses: prantlf/unshelve-changes-action@v2
       with:
-        files: ${{ needs.linux.outputs.changed-files }}
+        files: ${{ needs.macos.outputs.changed-files }}
         discard-shelf: false
     - run: make build RELEASE=1 MACOS_ARM=1
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v3
       with:
         arch: arm64
@@ -162,21 +82,102 @@ jobs:
     #     asset_name: vp-macos-arm64.zip
     #     asset_content_type: application/zip
 
-  windows:
+  linux:
+    if: ${{ github.ref_name == 'master' && needs.macos.outputs.changed == 'true' }}
     needs:
-      - linux
+      - macos
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: prantlf/setup-v-action@v2
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
       uses: prantlf/unshelve-changes-action@v2
       with:
-        files: ${{ needs.linux.outputs.changed-files }}
+        files: ${{ needs.macos.outputs.changed-files }}
+        discard-shelf: false
+    - run: make build RELEASE=1
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
+      uses: prantlf/shelve-output-action@v3
+      with:
+        extra: man
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-linux-x64.zip
+    #     asset_name: vp-linux-x64.zip
+    #     asset_content_type: application/zip
+
+  linux-arm:
+    if: ${{ github.ref_name == 'master' && needs.macos.outputs.changed == 'true' }}
+    needs:
+      - macos
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: prantlf/setup-v-action@v2
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v2
+      with:
+        files: ${{ needs.macos.outputs.changed-files }}
+        discard-shelf: false
+    - run: |
+        sudo apt-get update
+        sudo apt-get install gcc gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+    - run: make build RELEASE=1 LINUX_ARM=1
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
+      uses: prantlf/shelve-output-action@v3
+      with:
+        arch: arm64
+        extra: man
+    # - uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: https://uploads.github.com/repos/prantlf/vp/releases/141582010/assets{?name,label}"
+    #     asset_path: ./vp-linux-arm64.zip
+    #     asset_name: vp-linux-arm64.zip
+    #     asset_content_type: application/zip
+
+  linux-riscv:
+    if: ${{ github.ref_name == 'master' && needs.macos.outputs.changed == 'true' }}
+    needs:
+      - macos
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: prantlf/setup-v-action@v2
+    - uses: prantlf/unshelve-changes-action@v2
+      if: ${{ needs.macos.outputs.changed == 'true' }}
+      with:
+        files: ${{ needs.macos.outputs.changed-files }}
+        discard-shelf: false
+    - run: |
+        sudo apt-get update
+        sudo apt-get install gcc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu
+    - run: make build RELEASE=1 LINUX_RISCV=1
+    - uses: prantlf/shelve-output-action@v3
+      if: ${{ needs.macos.outputs.changed == 'true' }}
+      with:
+        arch: riscv64
+        extra: man
+
+  windows:
+    needs:
+      - macos
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: prantlf/setup-v-action@v2
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v2
+      with:
+        files: ${{ needs.macos.outputs.changed-files }}
         discard-shelf: false
     - run: sudo apt-get install gcc-mingw-w64-x86-64
     - run: make build RELEASE=1 WINDOWS=1
-    - if: ${{ needs.linux.outputs.changed == 'true' }}
+    - if: ${{ needs.macos.outputs.changed == 'true' }}
       uses: prantlf/shelve-output-action@v3
       with:
         os: windows
@@ -214,17 +215,17 @@ jobs:
   #       git clone --depth=1 --recursive --shallow-submodules https://github.com/prantlf/v-pcre src\modules\prantlf\pcre
   #       git clone --depth=1 --recursive --shallow-submodules https://github.com/prantlf/v-strutil src\modules\prantlf\strutil
   #       git clone --depth=1 --recursive --shallow-submodules https://github.com/prantlf/v-yaml src\modules\prantlf\yaml
-  #   - if: ${{ needs.linux.outputs.changed == 'true' }}
+  #   - if: ${{ needs.macos.outputs.changed == 'true' }}
   #     uses: prantlf/unshelve-changes-action@v2
   #     with:
-  #       files: ${{ needs.linux.outputs.changed-files }}
+  #       files: ${{ needs.macos.outputs.changed-files }}
   #       discard-shelf: false
   #   - run: cmd /c make.bat
-  #   - if: ${{ needs.linux.outputs.changed == 'true' }}
+  #   - if: ${{ needs.macos.outputs.changed == 'true' }}
   #     uses: prantlf/shelve-output-action@v3
 
   release:
-    if: ${{ github.ref_name == 'master' && needs.linux.outputs.changed == 'true' }}
+    if: ${{ github.ref_name == 'master' && needs.macos.outputs.changed == 'true' }}
     needs:
       - linux
       - linux-arm
@@ -237,7 +238,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: prantlf/unshelve-changes-action@v2
       with:
-        files: ${{ needs.linux.outputs.changed-files }}
+        files: ${{ needs.macos.outputs.changed-files }}
     - uses: prantlf/unshelve-output-action@v7
     - uses: prantlf/finish-release-action@v1
       env:
