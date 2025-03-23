@@ -1,5 +1,11 @@
 # Changes
 
+## [0.17.0](https://github.com/prantlf/vp/compare/v0.16.0...v0.17.0) (2025-03-23)
+
+### Features
+
+* Release Linux RISC-V archive if found ([f9a5786](https://github.com/prantlf/vp/commit/f9a57868cd59bf699b3ff61dac7e85590152f44d))
+
 ## [0.16.0](https://github.com/prantlf/vp/compare/v0.15.1...v0.16.0) (2025-03-22)
 
 ### Features
