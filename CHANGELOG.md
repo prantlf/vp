@@ -1,5 +1,11 @@
 # Changes
 
+## [0.17.2](https://github.com/prantlf/vp/compare/v0.17.1...v0.17.2) (2025-03-23)
+
+### Bug Fixes
+
+* Do not optimize binaries built on Linux ([0638b52](https://github.com/prantlf/vp/commit/0638b52a65fd800faf0dfa218dd084b3198eb66a))
+
 ## [0.17.1](https://github.com/prantlf/vp/compare/v0.17.0...v0.17.1) (2025-03-23)
 
 ### Bug Fixes
