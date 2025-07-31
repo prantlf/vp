@@ -14,7 +14,7 @@ on:
 jobs:
 
   macos:
-    runs-on: macos-13
+    runs-on: macos-latest
     outputs:
       changed: ${{ steps.bump.outputs.bumped }}
       changed-files: ${{ steps.bump.outputs.changed-files }}
@@ -36,7 +36,7 @@ jobs:
     if: ${{ github.ref_name == 'master' && needs.macos.outputs.changed == 'true' }}
     needs:
       - macos
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
     - uses: prantlf/setup-v-action@v2
@@ -145,7 +145,7 @@ jobs:
       - macos
       - macos-arm
       - windows
-    runs-on: macos-13
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: prantlf/unshelve-changes-action@v2
