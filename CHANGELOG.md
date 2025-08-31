@@ -1,5 +1,11 @@
 # Changes
 
+## [0.17.3](https://github.com/prantlf/vp/compare/v0.17.2...v0.17.3) (2025-08-31)
+
+### Bug Fixes
+
+* Publish temporarily from mac ([d6711a1](https://github.com/prantlf/vp/commit/d6711a142643b029aa85bd14c41fbeb911233e98))
+
 ## [0.17.2](https://github.com/prantlf/vp/compare/v0.17.1...v0.17.2) (2025-03-23)
 
 ### Bug Fixes
