@@ -145,7 +145,7 @@ jobs:
       - macos
       - macos-arm
       - windows
-    runs-on: ubuntu-latest
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
     - uses: prantlf/unshelve-changes-action@v2
