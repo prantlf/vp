@@ -1,5 +1,11 @@
 # Changes
 
+## [0.17.4](https://github.com/prantlf/vp/compare/v0.17.3...v0.17.4) (2025-08-31)
+
+### Bug Fixes
+
+* Workaround for 422 asset uploading error ([c7d5bb8](https://github.com/prantlf/vp/commit/c7d5bb8584d294543cae0e35350d688a523f0681))
+
 ## [0.17.3](https://github.com/prantlf/vp/compare/v0.17.2...v0.17.3) (2025-08-31)
 
 ### Bug Fixes
