@@ -1,5 +1,11 @@
 # Changes
 
+## [0.18.0](https://github.com/prantlf/vp/compare/v0.17.4...v0.18.0) (2025-10-11)
+
+### Features
+
+* Add option --no-npm-auth ([de1833f](https://github.com/prantlf/vp/commit/de1833f8a9522be51856efbefa8641eb699ead42))
+
 ## [0.17.4](https://github.com/prantlf/vp/compare/v0.17.3...v0.17.4) (2025-08-31)
 
 ### Bug Fixes
