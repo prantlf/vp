@@ -154,6 +154,9 @@ do not fail in case of no version change or release
 .IP "--no-verify"
 append --no-verify to commit and push
 .B
+.IP "--no-npm-auth"
+do not require npm token and write it to .npmrc
+.B
 .IP "--nc-args args"
 extra arguments for newchanges, enclosed in quotes
 .B
@@ -173,7 +176,7 @@ files to upload as extra assets to the github release
 extra files in which to bump the version
 .B
 .IP "-y|--yes"
-answer the push and reelase confirmations with "yes"
+answer the push and release confirmations with "yes"
 .B
 .IP "-d|--dry-run"
 only print what would be done without doing it

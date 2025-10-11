@@ -58,6 +58,7 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       --no-archives       do not upload platform archives automatically as assets
       --no-failure        do not fail in case of no version change or release
       --no-verify         append --no-verify to commit and push
+      --no-npm-auth       do not require npm token and write it to .npmrc
       --nc-args <args>    extra arguments for newchanges, enclosed in quotes
       --pre-release       publish a pre-release, not a stable release
       --pre-id <id>       first pre-release identifier (default: "next")
@@ -65,7 +66,7 @@ Helps with development, installation and maintenance of VPM, NPM and Cargo packa
       -t|--tag-prefix <prefix> expect git tags prefixed (default: "v")
       -a|--assets <file>  files to upload as extra assets to the github release
       -b|--bump-files <file> extra files in which to bump the version
-      -y|--yes            answer the push and reelase confirmations with "yes"
+      -y|--yes            answer the push and release confirmations with "yes"
       -d|--dry-run        only print what would be done without doing it
       -v|--verbose        print the new changes on the console too
 

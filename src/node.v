@@ -109,12 +109,14 @@ fn authenticate(opts &Opts) !(bool, string, []string) {
 		return false, '', []string{}
 	}
 
-	token := if opts.npm_token != '' {
-		opts.npm_token
-	} else {
-		get_npm_token()!
+	if opts.npm_auth {
+		token := if opts.npm_token != '' {
+			opts.npm_token
+		} else {
+			get_npm_token()!
+		}
+		set_auth_token(glob_npmrc, npmrc, token)!
 	}
-	set_auth_token(glob_npmrc, npmrc, token)!
 
 	return true, glob_npmrc, npmrc
 }
