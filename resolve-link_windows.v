@@ -8,8 +8,8 @@ import prantlf.debug { rwd }
 #include <ioapiset.h>
 
 fn C.CreateFileW(&u16, u32, u32, voidptr, u32, u32, voidptr) voidptr
-fn C.CloseHandle(voidptr) C.BOOL
-fn C.DeviceIoControl(voidptr, int, voidptr, int, voidptr, int, &int, voidptr) C.BOOL
+fn C.CloseHandle(voidptr) int
+fn C.DeviceIoControl(voidptr, int, voidptr, int, voidptr, int, &int, voidptr) int
 
 @[typedef]
 struct C.VP_REPARSE_DATA_BUFFER {
@@ -52,7 +52,7 @@ fn resolve_link(path string) !string {
 	}
 	mut buf := []u8{len: C.MAXIMUM_REPARSE_DATA_BUFFER_SIZE}
 	mut size := 0
-	if C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size, 0) != C.TRUE {
+	if C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size, 0) != 1 {
 		return error('enquiring link "${rwd(path)}" failed: ${last_error()}')
 	}
 	data := unsafe { &C.VP_REPARSE_DATA_BUFFER(buf.data) }
