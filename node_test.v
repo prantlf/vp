@@ -3,7 +3,7 @@ module main
 import os { chdir, getwd, join_path_single }
 
 fn test_find_package() {
-	chdir('src')!
+	chdir('test')!
 	cwd := getwd()
 	dir, name := find_package()!
 	chdir('..')!
@@ -12,7 +12,7 @@ fn test_find_package() {
 }
 
 fn test_read_json() {
-	pkg_file := join_path_single('src', 'package.json')
+	pkg_file := join_path_single('test', 'package.json')
 	any := read_json(pkg_file)!
 	assert any.get('name')!.string()! == 'package'
 }

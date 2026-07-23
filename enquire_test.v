@@ -18,7 +18,7 @@ fn test_get_current_version_manifest() {
 }
 
 fn test_get_current_version_package() {
-	ver := get_current_version('src')!
+	ver := get_current_version('test')!
 	assert ver == '0.0.1'
 }
 
@@ -33,7 +33,7 @@ fn test_get_name_manifest() {
 }
 
 fn test_get_name_package() {
-	chdir('src')!
+	chdir('test')!
 	name := get_name(Opts{ vlang: false })!
 	chdir('..')!
 	assert name == 'package'

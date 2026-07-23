@@ -116,7 +116,8 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 			} else {
 				''
 			}
-			out := execute('git push --atomic${no_verify}${push_skip_ci} origin HEAD "${opts.tag_prefix}${ver}"')!
+			out :=
+				execute('git push --atomic${no_verify}${push_skip_ci} origin HEAD "${opts.tag_prefix}${ver}"')!
 			d.log_str(out)
 			eprintln('')
 		}

@@ -28,7 +28,9 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 
 	if !opts.dry_run {
 		d.log_str('stringifying package.json')
-		text := stringify_opt(pkg, &StringifyOpts{ pretty: true })
+		text := stringify_opt(pkg, &StringifyOpts{
+			pretty: true
+		})
 		if d.is_enabled() {
 			len := if text.len > 250 {
 				250
@@ -44,7 +46,9 @@ fn set_package_version(ver string, pkg_dir string, opts &Opts) ! {
 		if lck_is {
 			dlck_file := d.rwd(lck_file)
 			d.log('writing file "%s"', dlck_file)
-			text2 := stringify_opt(lck, &StringifyOpts{ pretty: true })
+			text2 := stringify_opt(lck, &StringifyOpts{
+				pretty: true
+			})
 			write_file(lck_file, text2)!
 		}
 	}

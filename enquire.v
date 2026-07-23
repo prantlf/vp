@@ -76,8 +76,7 @@ fn analyse_module(force bool) !(string, string, string, vmod.Manifest) {
 	// 	}
 	// }
 	if name != manifest.name {
-		d.log('name from the manifest "%s" differs from the repository "%s"', manifest.name,
-			name)
+		d.log('name from the manifest "%s" differs from the repository "%s"', manifest.name, name)
 	}
 	dvmod_dir := d.rwd(vmod_dir)
 	d.log('module "%s.%s" found in "%s"', scope, manifest.name, dvmod_dir)

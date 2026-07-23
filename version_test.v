@@ -72,7 +72,7 @@ fn test_update_version_same() {
 }
 
 fn test_update_version_other_file() {
-	update_version('src/vp.v', test_re_vertxt, test_re_vernum, '1.0.0', true, &test_opts)!
+	update_version('vp.v', test_re_vertxt, test_re_vernum, '1.0.0', true, &test_opts)!
 }
 
 fn test_update_version_not_exist() {

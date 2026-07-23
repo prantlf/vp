@@ -1,7 +1,7 @@
 import os { last_error }
 import prantlf.debug { rwd }
 
-#flag -I @VROOT/src
+#flag -I @VROOT
 // #include <ntifs.h>
 #include "resolve-link_win.h"
 #include <winioctl.h>
@@ -41,9 +41,9 @@ struct C.VP_REPARSE_DATA_BUFFER {
 fn resolve_link(path string) !string {
 	dpath := d.rwd(path)
 	d.log('resolving the link "%s"', dpath)
-	fh := C.CreateFileW(path.to_wide(), C.FILE_READ_EA, C.FILE_SHARE_READ | C.FILE_SHARE_WRITE | C.FILE_SHARE_DELETE,
-		0, C.OPEN_EXISTING, C.FILE_FLAG_BACKUP_SEMANTICS | C.FILE_FLAG_OPEN_REPARSE_POINT,
-		0)
+	fh := C.CreateFileW(path.to_wide(), C.FILE_READ_EA,
+		C.FILE_SHARE_READ | C.FILE_SHARE_WRITE | C.FILE_SHARE_DELETE, 0, C.OPEN_EXISTING,
+		C.FILE_FLAG_BACKUP_SEMANTICS | C.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 	if fh == C.INVALID_HANDLE_VALUE {
 		return error('opening link "${rwd(path)}" failed: ${last_error()}')
 	}
@@ -52,8 +52,7 @@ fn resolve_link(path string) !string {
 	}
 	mut buf := []u8{len: C.MAXIMUM_REPARSE_DATA_BUFFER_SIZE}
 	mut size := 0
-	if C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size,
-		0) != C.TRUE {
+	if C.DeviceIoControl(fh, C.FSCTL_GET_REPARSE_POINT, 0, 0, buf.data, buf.len, &size, 0) != C.TRUE {
 		return error('enquiring link "${rwd(path)}" failed: ${last_error()}')
 	}
 	data := unsafe { &C.VP_REPARSE_DATA_BUFFER(buf.data) }
