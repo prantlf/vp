@@ -1,5 +1,15 @@
 # Changes
 
+## [0.19.0](https://github.com/prantlf/vp/compare/v0.18.0...v0.19.0) (2026-07-23)
+
+### Features
+
+* Adapt to breaking changes in V ([87e6cc3](https://github.com/prantlf/vp/commit/87e6cc392b3b56a4542f490d6cd2a6ae88a85fb3))
+
+### Bug Fixes
+
+* Adapt C.BOOL handling for the new V version ([649c501](https://github.com/prantlf/vp/commit/649c501d0b397c97cf99e324432e672c1b0f7a27))
+
 ## [0.18.0](https://github.com/prantlf/vp/compare/v0.17.4...v0.18.0) (2025-10-11)
 
 ### Features
